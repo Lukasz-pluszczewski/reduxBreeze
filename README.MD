@@ -3,7 +3,7 @@
 
 [![CircleCI](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze.svg?style=svg)](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze)
 
-Library to make managing state, actionCreators, reducers in you redux application a breeze. You can finally stop copyPasting and start actually coding! :)
+Library to make managing state, actionCreators, reducers in your redux application a breeze. You can finally stop copyPasting and start actually coding! :)
 
 ## FAQ
 ##### Why this exists?
