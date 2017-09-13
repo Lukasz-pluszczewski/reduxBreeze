@@ -1,4 +1,4 @@
-# Library boilerplate
+# reduxBreeze
 >Powerful redux wrapper to make handling redux actions and reducers a breeze!
 
 [![CircleCI](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze.svg?style=svg)](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze)
