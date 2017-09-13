@@ -293,7 +293,7 @@ You may grab a thing from todo (see below) or write plugins for your use-case.
    * add plugins tutorial
  * write action definitions validation (by default only checking for 'type' field, but make it plugin enabled)
  * add more plugins:
-   * redux-sage
+   * redux-saga
    * redux-thunk
    * redux-better-promise
  * add selectors functionality (plugin-enabled)
