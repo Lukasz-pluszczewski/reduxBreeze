@@ -175,7 +175,7 @@ const actionsDefinitions = {
       type: 'default',
       result: [
         { sourcePath: 'payload.payloadField', targetPath: 'someObjectInState.someSubObject.myField', defaultValue: ['myStrangeDefaultValue'], initialValue: [] },
-        { sourcePath: 'payload.otherPayloadField, targetPath: 'field', result: 'list' }, // result below works exactly like above: sets default value to empty array
+        { sourcePath: 'payload.otherPayloadField', targetPath: 'field', result: 'list' }, // result below works exactly like above: sets default value to empty array
       ],
     },
   },
