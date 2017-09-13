@@ -1,0 +1,7 @@
+node_modules
+npm-debug.log
+.vscode
+.idea/
+
+# new npm is bad, really really bad (but fast ;) )
+package-lock.json
