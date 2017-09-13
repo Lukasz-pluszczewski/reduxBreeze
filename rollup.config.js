@@ -11,7 +11,7 @@ export default {
       addModuleOptions: false,
     })),
   ],
-  external: external,
+  external,
   exports: 'named',
   globals: {
     lodash: '_',

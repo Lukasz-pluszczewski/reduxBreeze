@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 /**
  * Helper for redux to attach reducers to one field instead of composing them into separate fields
- * @param {array} reducers
+ * @param {array} rawReducers array of unchained, not combined reducers
  * @return {function} reducer
  */
 export const chainReducers = rawReducers => (state, action) => {
@@ -50,7 +50,7 @@ export const checkConflicts = (plugins, adapterType, map = actionType => actionT
  * @param {array} plugins array of plugins objects
  * @param {boolean} strict with strict turned on we throw an error on plugin conflicts
  * @param {function} mapActionTypes function that changes names of action types
- * @returns {{actionAdapter, reducerAdapter, initialStateAdapter}} merged plugin object
+ * @return {{actionAdapter, reducerAdapter, initialStateAdapter}} merged plugin object
  */
 export const mergePlugins = (plugins, { strict = true, mapActionTypes = actionType => actionType } = {}) => {
   const actionAdapterConflicts = checkConflicts(plugins, 'actionAdapter', mapActionTypes);
@@ -92,14 +92,14 @@ export const mergePlugins = (plugins, { strict = true, mapActionTypes = actionTy
       ..._.reduce(plugin.reducerAdapter, (accu, reducerAdapter, actionType) => {
         accu[mapActionTypes(actionType, plugin.name, 'reducerAdapter')] = reducerAdapter;
         return accu;
-      }, {})
+      }, {}),
     }), {}),
     initialStateAdapter: plugins.reduce((actionAdapter, plugin) => ({
       ...actionAdapter,
       ..._.reduce(plugin.initialStateAdapter, (accu, initialStateAdapter, actionType) => {
         accu[mapActionTypes(actionType, plugin.name, 'initialStateAdapter')] = initialStateAdapter;
         return accu;
-      }, {})
+      }, {}),
     }), {}),
 
   };
@@ -110,7 +110,7 @@ export const mergePlugins = (plugins, { strict = true, mapActionTypes = actionTy
  * @param {string} actionName camelCase name of the action (e.g. someAction)
  * @param {string} suffix string that is going to be added at the end of the created action type
  * @param {string} prefix string that is going to be added at the beginning of the created action type
- * @returns {string} upperSnakeCase action type (e.g. SOME_ACTION or with example suffix SOME_ACTION_SUFFIX)
+ * @return {string} upperSnakeCase action type (e.g. SOME_ACTION or with example suffix SOME_ACTION_SUFFIX)
  */
 export const createActionType = (actionName, suffix = '', prefix = '') => {
   const upperSnakeCase = _.snakeCase(actionName).toUpperCase();
@@ -120,10 +120,10 @@ export const createActionType = (actionName, suffix = '', prefix = '') => {
 /**
  * Works like lodash _.set() but does not mutate object (doesn't work with array style keys like `someArray[2].anotherField`)
  * @param {object} object source object
- * @param {string|{[string]: any}} path in object to set value in or object with paths as keys and values as values (if path is an object it ignores 'value')
+ * @param {string|object} path in object to set value in or object with paths as keys and values as values (if path is an object it ignores 'value')
  * @param {any} value to set in given path
  * @param {string} delimiter path delimiter; by default: '.'
- * @returns {object} new object with value(s) changed
+ * @return {object} new object with value(s) changed
  */
 export const immutableSet = (object, path, value = null, delimiter = '.') => {
   // console.log('immutableSet', {object, path, value, delimiter});
@@ -142,7 +142,7 @@ export const immutableSet = (object, path, value = null, delimiter = '.') => {
     return {
       ...object,
       [path]: value,
-    }
+    };
   }
   let childObject = {};
   if (_.has(object, pathSplit[0])) {

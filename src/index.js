@@ -11,11 +11,11 @@ const defaultConfig = {
    * @param {string} actionType action type name (like 'default' in default plugin)
    * @param {string} pluginName name of the plugin
    * @param {string} adapterType type of adapter: 'actionAdapter', 'reducerAdapter', 'initialStateAdapter'
-   * @returns {*}
+   * @return {string} changed actionType
    */
   mapActionTypes(actionType, pluginName, adapterType) {
     return actionType;
-  }
+  },
 };
 
 export const tools = {
@@ -44,21 +44,30 @@ const createReduxBreezeInstance = (actionDefinitions, config = defaultConfig, ..
    * Function to generate initialState (and immutably deeply merge it with custom initialState) from actions definitions
    * @param {object} actions object of action definitions
    * @param {object} initialState optional custom initial state
+   * @return {object} created initial state (merged with provided initialState)
    */
-  const createInitialState = (actions, initialState = {}) => {
-    return _.reduce(actions, (actionsState, actionDefinition, actionName) => {
+  const createInitialState = (actions, initialState = {}) => _.reduce(
+    actions,
+    (actionsState, actionDefinition, actionName) => {
       if (plugin.initialStateAdapter[actionDefinition.type]) {
-        return immutableSet(actionsState, plugin.initialStateAdapter[actionDefinition.type](actionDefinition, actionName));
+        return immutableSet(
+          actionsState,
+          plugin.initialStateAdapter[actionDefinition.type](actionDefinition, actionName)
+        );
       }
       return actionsState;
-    }, initialState);
-  };
+    },
+    initialState
+  );
 
   return {
     combineReducers(customReducers = {}) {
       const reducers = _.reduce(actionDefinitions, (reducers, actions, reducerName) => {
         // getting final initial state for this combined/chained reducer (triggering custom reducers to get their initial state)
-        const initialState = createInitialState(actions, reducers[reducerName] ? reducers[reducerName](undefined, {}) : {});
+        const initialState = createInitialState(
+          actions,
+          reducers[reducerName] ? reducers[reducerName](undefined, {}) : {} // eslint-disable-line  no-undefined
+        );
 
         // creating array of reducers tha are going to be chained on the `reducerName` field
         const reducersToChain = _.map(actions, (actionDefinition, actionName) => {
@@ -79,7 +88,7 @@ const createReduxBreezeInstance = (actionDefinitions, config = defaultConfig, ..
       return combineReducers(reducers);
     },
     getAction(actionName, config) {
-      const actionGroup = _.find(actionDefinitions, (actionsList) => _.has(actionsList, actionName));
+      const actionGroup = _.find(actionDefinitions, actionsList => _.has(actionsList, actionName));
       if (!actionGroup) {
         throw new Error(`${actionName} action has not been found`);
       }
