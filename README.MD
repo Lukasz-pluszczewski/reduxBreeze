@@ -5,6 +5,10 @@
 
 Library to make managing state, actionCreators, reducers in your redux application a breeze. You can finally stop copyPasting and start actually coding! :)
 
+Note: This library is designed to help experienced developers in complex apps. If you are new to redux you definately should first learn how to use it, and when you get familiar to it and get bored by copying a lot of code, you can return to reduxBreeze ;)
+
+Note2: This library is in early stage of development. Use at you own risk and, if you like the idea, feel free to help me making it epic! ;)
+
 ## FAQ
 ##### Why this exists?
 Redux is really great! It allows you to have whole application state in one, easily accessible place and manage it in a predictable way. All is good... until your application gets big and you write tens or even hundreds of same reducer cases and action creators. You start thinking: "that's a lot of work a computer is perfect at: copying stuff around"
@@ -127,7 +131,7 @@ export default {
 ```
 Reducers that are to be generated will be smartly merged with your custom ones.
 
-You also do not have to care about initialState. You your initialState in your custom reducers like always and reduxBreeze will take care of everything!
+You also do not have to care about initialState. Use your initialState in your custom reducers like always and reduxBreeze will take care of everything!
 
 #### Create root reducer for your store
 ```javascript
@@ -135,7 +139,7 @@ import { createStore } from 'redux'
 import reduxBreezeInstance from 'myReduxBreezeInstance.js';
 import myCustomReducers from 'myCustomReducers.js';
 
-// reduxBreezeInstance has it's own combineReducer method that does same thing but adding generated stuff to reducers and initial state
+// reduxBreezeInstance has it's own combineReducer method that does same thing but also adds generated stuff to reducers and initial state
 const store = createStore(reduxBreezeInstance.combineReducer(myCustomRedcuers));
 ```
 
@@ -171,7 +175,7 @@ const actionsDefinitions = {
       type: 'default',
       result: [
         { sourcePath: 'payload.payloadField', targetPath: 'someObjectInState.someSubObject.myField', defaultValue: ['myStrangeDefaultValue'], initialValue: [] },
-        { sourcePath: 'payload.otherPayloadField, targetpath: 'field', result: 'list' } // result here works exactly like above: sets default value to empty array
+        { sourcePath: 'payload.otherPayloadField, targetPath: 'field', result: 'list' } // result here works exactly like above: sets default value to empty array
       ],
     },
   },
