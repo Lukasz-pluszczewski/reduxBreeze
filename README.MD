@@ -5,7 +5,7 @@
 
 Library to make managing state, actionCreators, reducers in your redux application a breeze. You can finally stop copyPasting and start actually coding! :)
 
-Note: This library is designed to help experienced developers in complex apps. If you are new to redux you definately should first learn how to use it, and when you get familiar to it and get bored by copying a lot of code, you can return to reduxBreeze ;)
+Note: This library is designed to help experienced developers in complex apps. If you are new to redux you definately should first learn how to use it, and when you get familiar with it and get bored by copying a lot of code, you can return to reduxBreeze ;)
 
 Note2: This library is in early stage of development. Use at you own risk and, if you like the idea, feel free to help me making it epic! ;)
 
@@ -175,7 +175,7 @@ const actionsDefinitions = {
       type: 'default',
       result: [
         { sourcePath: 'payload.payloadField', targetPath: 'someObjectInState.someSubObject.myField', defaultValue: ['myStrangeDefaultValue'], initialValue: [] },
-        { sourcePath: 'payload.otherPayloadField, targetPath: 'field', result: 'list' } // result here works exactly like above: sets default value to empty array
+        { sourcePath: 'payload.otherPayloadField, targetPath: 'field', result: 'list' } /* result here works exactly like above: sets default value to empty array */
       ],
     },
   },
