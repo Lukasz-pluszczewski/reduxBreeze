@@ -161,7 +161,7 @@ connect(
 ## API
 
 #### `createBreeze(actionsDefinition, config, ...plugin)`
- - `import createBreeze from 'mi18n-redux'`
+ - `import createBreeze from 'reduxBreeze'`
  - function to create a reduxBreeze instance
  - arguments
    - **actionsDefinitions**: *object* Object with actions definitions
@@ -205,6 +205,7 @@ connect(
  - returns: **actionCreator**
 
 #### `tools.chainReducers(...reducer)`
+ - `import { tools } from 'reduxBreeze'`
  - helper function to chain several reducers (and e.g. assign it to same field in redux state)
  - when called chained reducer, all chained reducers will be called in order, each getting state returned by previous one
  - arguments
@@ -212,6 +213,7 @@ connect(
  - return **chainedReducer**
 
 #### `tools.createActionType(actionName, suffix, prefix)`
+ - `import { tools } from 'reduxBreeze'`
  - helper function to create redux action type from actionName
  - arguments:
    - **actionName**: *string*
@@ -225,6 +227,7 @@ connect(
  ```
 
 #### `tools.immmatableSet(object, path, value, delimiter)`
+ - `import { tools } from 'reduxBreeze'`
  - works like lodash's _.set() but does not mutate the object (can be used to easily, immutably set value in complicated nested structure)
  - arguments:
    - **object**: *object* object to set value in
