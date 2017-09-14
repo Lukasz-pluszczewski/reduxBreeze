@@ -2,12 +2,12 @@ import _ from 'lodash';
 
 class hasNotBeenDefined {}
 
-const createDefaultPlugin = ({ createActionType, immutableSet }) => ({
+const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
   /**
    * Object of functions that gets `actionDefinition` and `actionName` as arguments and return action creator
    */
   actionAdapter: {
-    default(definition, actionName, config) {
+    default(actionDefinition, actionName) {
       return params => ({
         type: createActionType(actionName),
         payload: params,
@@ -53,19 +53,19 @@ const createDefaultPlugin = ({ createActionType, immutableSet }) => ({
    * Object of functions that gets `actionDefinition` and `actionName` as arguments and return assignment object (with keys = paths, values = values to be saved in those paths)
    */
   initialStateAdapter: {
-    default(definition, actionName) {
+    default(actionDefinition, actionName) {
       let resultsAssignements = null;
       let defaultValue;
-      if (_.has(definition, 'initialValue')) {
-        defaultValue = definition.initialValue;
-      } else if (definition.result === 'list') {
+      if (_.has(actionDefinition, 'initialValue')) {
+        defaultValue = actionDefinition.initialValue;
+      } else if (actionDefinition.result === 'list') {
         defaultValue = [];
-      } else if (definition.result === 'entity') {
+      } else if (actionDefinition.result === 'entity') {
         defaultValue = null;
       }
 
-      if (Array.isArray(definition.result)) {
-        resultsAssignements = definition.result.reduce(
+      if (Array.isArray(actionDefinition.result)) {
+        resultsAssignements = actionDefinition.result.reduce(
           (accu, { targetPath, result, initialValue = new hasNotBeenDefined() }) => {
             if (initialValue instanceof hasNotBeenDefined) {
               accu[targetPath] = result === 'list' ? [] : null;
@@ -77,7 +77,7 @@ const createDefaultPlugin = ({ createActionType, immutableSet }) => ({
           {}
         );
       } else {
-        resultsAssignements = { [definition.resultName]: defaultValue };
+        resultsAssignements = { [actionDefinition.resultName]: defaultValue };
       }
       return resultsAssignements;
     },

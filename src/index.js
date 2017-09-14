@@ -26,10 +26,15 @@ export const tools = {
   checkConflicts,
 };
 
-const createReduxBreezeInstance = (actionDefinitions, config = defaultConfig, ...plugins) => {
+const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig, ...plugins) => {
+  const config = {
+    ...userConfig,
+    ...defaultConfig,
+  };
+
   // merging plugins deeply
   const pluginsToMerge = config.useDefaultPlugin
-    ? [createDefaultPlugin(tools), ...plugins.map(plugin => plugin(tools))]
+    ? [createDefaultPlugin(tools), ...plugins.map(plugin => plugin(tools, config))]
     : plugins.map(plugin => plugin(tools));
 
   const plugin = mergePlugins(

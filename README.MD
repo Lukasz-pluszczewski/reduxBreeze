@@ -88,6 +88,62 @@ connect(
 Interested?
 Dive into the documentation :)
 
+## Glossary
+
+**actionCreator**
+[see redux documentation](http://redux.js.org/docs/basics/Actions.html#action-creators)
+
+**actionDefinition**
+Object with fields required by *plugin* used. By default actionDefinition must have *type* field which is it's *actionType*
+
+**actionType**
+(not to be confused with *reduxActionType*) a string which tells reduxBreeze which plugin should handle *actionDefinition*. Default plugin handles actions of type 'default'
+
+**actionDefinitions**
+Object that must be provided to reduxBreeze when creating it's instance. It's shape is as follows:
+```javascript
+{
+  reducerName: {
+    actionName: actionDefinition,
+    action2Name: actionDefinition,
+  },
+  reducer2Name: {
+    action3Name: actionDefinition,
+  },
+}
+```
+
+**actionName**
+String specific for an action definition. It is used to get the actionCreator for it, as well as for generating *reduxActionType* (in case of default plugin)
+
+**assignmentObject**
+Object for immutableSet function. Its keys must be paths and values are values to be set in those paths. It must be returned by initialStateAdapters in plugins.
+
+**reduxActionType**
+String used [in redux actions](http://redux.js.org/docs/basics/Actions.html). In default plugin it generated from camel case *actionName* and is in the form: 'ACTION_NAME'
+
+**plugin**
+A function that gets *tools* object as it's first argument and *config* as it's second argument. It should return an object of following shape:
+```javascript
+{
+  actionAdapter: {
+    actionType(actionDefinition, actionName) {
+      return actionCreator;
+    },
+  },
+  reducerAdapter: {
+    actionType(actionDefinition, actionName, initialState) {
+      return reducer;
+    },
+  },
+  initialStateAdapter: {
+    actionType(actionDefinition, actionName) {
+      return assignmentsObject;
+    },
+  },
+}
+```
+
 ## Usage
 
 Examples uses defaultPlugin (it's enabled by default and provides simple functionality - details below)
@@ -359,7 +415,7 @@ And it's just the beginning! :)
    - **type**: *string = 'default'* action type, must be 'default' to be handled by default plugin
    - **initialValue** *any* value that is going to be used in initial state in *targetPath*
    - **defaultValue** *any* value that is going to be used when not provided in the action
-   - **result**: *string|array<{sourcePath: string, targetPath: string, initialValue: any, defaultValue, any, result: string}> type of the result; if 'list' then initialValue will be emtpy string by default; if 'entity' default initial value will be null;
+   - **result**: *string|array<{sourcePath: string, targetPath: string, initialValue: any, defaultValue, any, result: string}>* type of the result; if 'list' then initialValue will be emtpy string by default; if 'entity' default initial value will be null;
      - **sourcePath** *string* path from action the data is going to be taken from, can be nested e.g. 'payload.someField.someSubField'
      - **targetPath** *string* path in reducer's state, the data is going to be saved in, can be nested e.g. 'someField.someSubField'
      - **initialValue** *any* value that is going to be used in initial state in *targetPath*
@@ -368,7 +424,26 @@ And it's just the beginning! :)
 
 ## Plugins API
 
-Section under construction! Will be available very soon!
+#### `plugin(tools, config)`
+ - parameters
+   - **tools**: *object* object of tools (consist of *chainReducer*, *createActionType*, *immmatableSet*)
+   - **config**: *object* reduxBreeze config object
+ - returns **pluginObject**
+
+#### `pluginObject`
+ - fields:
+   - **actionAdapter**: *object*
+     - fields:
+       - **\[actionType: string\]**: *function(actionDefinition: object, actionName: string)* adapter that gets action definition and should return action creator
+
+   - **reducerAdapter**: *object*
+     - fields:
+       - **\[actionType: string\]**: *function(actionDefinition: object, actionName: string, initialState: any)* adapter that gets action definition and initialSate and returns reducer (reducer to handle only that one action)
+
+   - **initialStateAdapter**: *object*
+     - fields;
+       **\[actionType: string\]**: *function(actionDefinition: object, actionName: string)* adapter that gets actionDefinition and should return assignmentObject (only for this particular action)
+ - example [see default plugin](src/defaultPlugin.js)
 
 ## I wanna help!
 Great!
