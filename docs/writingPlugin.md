@@ -19,4 +19,4 @@
    - **initialStateAdapter**: *object*
      - fields:
        - **\[actionType: string\]**: *function(actionDefinition: object, actionName: string)* adapter that gets actionDefinition and should return assignmentObject (only for this particular action)
- - example [see default plugin](src/defaultPlugin.js)
+ - example [see default plugin](https://github.com/Lukasz-pluszczewski/reduxBreeze/blob/master/src/defaultPlugin.js)
