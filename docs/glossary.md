@@ -4,7 +4,7 @@
 [see redux documentation](http://redux.js.org/docs/basics/Actions.html#action-creators)
 
 **actionDefinition**
-Object with fields required by *plugin* used. By default actionDefinition must have *type* field which is it's *actionType*
+Object with fields required by *plugin*. By default actionDefinition must have *type* field which is it's *actionType*
 
 **actionType**
 (not to be confused with *reduxActionType*) a string which tells reduxBreeze which plugin should handle *actionDefinition*. Default plugin handles actions of type 'default'
@@ -12,7 +12,7 @@ Object with fields required by *plugin* used. By default actionDefinition must h
 **actionDefinitions**
 Object that must be provided to reduxBreeze when creating it's instance. It's shape is as follows:
 ```javascript
-{
+actionDefinitions = {
   reducerName: {
     actionName: actionDefinition,
     action2Name: actionDefinition,
@@ -35,7 +35,7 @@ String used [in redux actions](http://redux.js.org/docs/basics/Actions.html). In
 **plugin**
 A function that gets *tools* object as it's first argument and *config* as it's second argument. It should return an object of following shape:
 ```javascript
-{
+({
   actionAdapter: {
     actionType(actionDefinition, actionName) {
       return actionCreator;
@@ -51,5 +51,5 @@ A function that gets *tools* object as it's first argument and *config* as it's 
       return assignmentsObject;
     },
   },
-}
+})
 ```

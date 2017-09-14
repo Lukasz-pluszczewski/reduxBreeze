@@ -41,9 +41,9 @@ Let's make a form. Very small one. We would need one 'name' field with it's stat
 change line `const actionDefinitions = {};` in `myReduxBreezeInstance.js` to something like this:
 ```javascript
 const actionDefinitions = {
-  mySimpleForm: { // this is going tobe a name of the reducer (thus a name of the part of the redux state that we use to keep our form data)
+  mySimpleForm: { // this is going to be a name of the reducer (thus a name of the part of the redux state that we use to keep our form data)
     setNameFieldValue: {
-      type: 'default', // we tell reduxBreeze that default plugin should hanlde this action
+      type: 'default', // we tell reduxBreeze that default plugin should handle this action
       result: [
         {
           sourcePath: 'payload', // we tell defaultPlugin where it can find new value in an action

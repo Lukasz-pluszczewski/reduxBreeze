@@ -107,6 +107,7 @@ You may grab a thing from todo (see below) or write plugins for your use-case.
    * document config (not a big thing ;) )
    * add basic usage tutorial
    * add plugins tutorial
+ * add tests to default plugin
  * write action definitions validation (by default only checking for 'type' field, but make it plugin enabled)
  * add more plugins:
    * redux-saga
