@@ -28,8 +28,8 @@ export const tools = {
 
 const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig, ...plugins) => {
   const config = {
-    ...userConfig,
     ...defaultConfig,
+    ...userConfig,
   };
 
   // merging plugins deeply
