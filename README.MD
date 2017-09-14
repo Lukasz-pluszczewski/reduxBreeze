@@ -426,7 +426,7 @@ And it's just the beginning! :)
 
 #### `plugin(tools, config)`
  - parameters
-   - **tools**: *object* object of tools (consist of *chainReducer*, *createActionType*, *immmatableSet*)
+   - **tools**: *object* object of tools (consist of *chainReducer*, *createActionType*, *immutableSet*)
    - **config**: *object* reduxBreeze config object
  - returns **pluginObject**
 
