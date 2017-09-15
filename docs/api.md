@@ -78,7 +78,7 @@
  tools.createActionType('myFancyName', '', 'blah'); // BLAH_MY_FANCY_NAME
  ```
 
-#### `tools.immutable(object, path, value, delimiter)`
+#### `tools.immutableSet(object, path, value, delimiter)`
  - `import { tools } from 'reduxBreeze'`
  - works like lodash's _.set() but does not mutate the object (can be used to easily, immutably set value in complicated nested structure)
  - arguments:

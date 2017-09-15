@@ -31,7 +31,7 @@ import myCustomReducers from 'myCustomReducers.js';
 const store = createStore(reduxBreezeInstance.combineReducer(myCustomRedcuers));
 ```
 
-And **that's all!** Now you can use you reducers, actions etc. like before, unleashing the power of reduxBreeze at the same time ;)
+And **that's all!** Now you can use your reducers, actions etc. like before, unleashing the power of reduxBreeze at the same time ;)
 
 # Creating my first actions
 
