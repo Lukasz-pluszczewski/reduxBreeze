@@ -1,5 +1,17 @@
 # API
 
+#### `assignmentsObject`
+ - Object with keys being paths (like 'field.subField') and values being values tobe put in those paths
+ - used by `tools.immutableSet` function and must be returned by a initialStateAdapter in plugin
+ - example
+ ```javascript
+ const assignmentsObject = {
+   'fieldOne.subField': 'some value',
+   'fieldTwo': 2,
+   'another.nullableField': null,
+ };
+ ```
+
 #### `createBreeze(actionsDefinition, config, ...plugin)`
  - `import createBreeze from 'reduxBreeze'`
  - function to create a reduxBreeze instance
@@ -71,7 +83,7 @@
  - works like lodash's _.set() but does not mutate the object (can be used to easily, immutably set value in complicated nested structure)
  - arguments:
    - **object**: *object* object to set value in
-   - **path**: *string|{\[path: string\]: value: any}* path to the value you want to change, can be deep where field values are divided by *delimiter* (default: .) e.g. 'field.subField.somethingElse'. Can be an object e.g. { 'field.subField': 'newValue', 'anotherField.anotherSubField': 'anotherNewValue' } Lodash's array like syntax is not supported (e.g. 'field\[1\].subField')
+   - **path**: *string|assignmentsObject}* path to the value you want to change, can be deep where field values are divided by *delimiter* (default: .) e.g. 'field.subField.somethingElse'. Can be an object e.g. { 'field.subField': 'newValue', 'anotherField.anotherSubField': 'anotherNewValue' } Lodash's array like syntax is not supported (e.g. 'field\[1\].subField')
    - **value**: *any* value to be set in the path (if path is an object *value* is ignored)
    - **delimiter**: *string* (defaut: **'.'**) delimiter used in the path
  - returns **newObject**
