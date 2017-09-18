@@ -19,7 +19,7 @@ Change this code:
 import { createStore, combineReducers } from 'redux';
 import myCustomReducers from 'myCustomReducers.js';
 
-const store = createStore(combineReducer(myCustomRedcuers));
+const store = createStore(combineReducer(myCustomReducers));
 ```
 
 to this:

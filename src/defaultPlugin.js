@@ -37,12 +37,16 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
                 }
               ) => {
                 // setting default value if one has not been provided and defaultValue is defined
-                if (!(defaultValue instanceof hasNotBeenDefined) && _.isUndefined(_.get(action, sourcePath))) {
-                  accu[targetPath] = defaultValue;
+                if (
+                  !(defaultValue instanceof hasNotBeenDefined)
+                  && _.isUndefined(_.get(action, sourcePath))
+                  && value instanceof hasNotBeenDefined
+                ) {
+                  accu[targetPath] = _.isFunction(defaultValue) ? defaultValue(action) : defaultValue;
 
                 // setting value based on sourcePath
                 } else if (value instanceof hasNotBeenDefined) {
-                  accu[targetPath] = _.get(action, sourcePath);
+                  accu[targetPath] = _.get(action, _.isFunction(sourcePath) ? sourcePath(action) : sourcePath);
 
                 // setting value calculated by a 'value' function
                 } else if (_.isFunction(value)) {
@@ -62,7 +66,11 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
             const resultName = actionDefinition.resultName || actionName;
 
             // setting default value if one has not been provided and defaultValue is defined
-            if (!_.has(actionDefinition, 'defaultValue') && _.isUndefined(action.payload)) {
+            if (
+              _.has(actionDefinition, 'defaultValue')
+              && _.isUndefined(action.payload)
+              && _.has()
+            ) {
               resultsAssignments = { [resultName]: actionDefinition.defaultValue };
             } else if (!_.has(actionDefinition, 'value')) {
               resultsAssignments = { [resultName]: action.payload };

@@ -16,12 +16,10 @@ const testPlugin = ({ createActionType, immutableSet }) => ({
    */
   actionAdapter: {
     test(definition, actionName) {
-      return (params) => {
-        return {
-          params,
-          somethingMore: 'someMoreValue',
-        };
-      };
+      return params => ({
+        params,
+        somethingMore: 'someMoreValue',
+      });
     },
   },
 
@@ -57,9 +55,8 @@ const testPlugin = ({ createActionType, immutableSet }) => ({
 });
 
 
-
 describe('reduxBreeze', () => {
-  let nativeConsoleWarn = console.warn;
+  const nativeConsoleWarn = console.warn;
   before(() => {
     console.warn = () => {};
   });
@@ -197,9 +194,7 @@ describe('reduxBreeze', () => {
       const plugin1 = () => plugin1Value;
       const plugin2 = () => plugin2Value;
 
-      const mapActionTypes = (actionType, pluginName, adapterType) => {
-        return pluginName === 'plugin2' ? `plugin2${actionType}` : actionType;
-      };
+      const mapActionTypes = (actionType, pluginName, adapterType) => pluginName === 'plugin2' ? `plugin2${actionType}` : actionType;
 
       const reduxBreezeInstance = createReduxBreezeInstance({}, { useDefaultPlugin: false, mapActionTypes }, plugin1, plugin2);
       expect(reduxBreezeInstance.getMergedPlugin()).to.nested.include({
@@ -224,7 +219,7 @@ describe('reduxBreeze', () => {
           someOtherAction: {
             type: 'test',
           },
-        }
+        },
       };
       const expectedInitialState = {
         exampleReducer: {
@@ -234,7 +229,7 @@ describe('reduxBreeze', () => {
         exampleReducer2: {
           someOtherAction: null,
           field: 1,
-        }
+        },
       };
 
       const reduxBreezeInstance = createReduxBreezeInstance(actionDefinitions, { useDefaultPlugin: false }, testPlugin);
@@ -249,11 +244,10 @@ describe('reduxBreeze', () => {
         exampleReducer2: {
           someOtherAction: 'SOMETHING',
           field: 2,
-        }
+        },
       });
     });
     it('should merge generated reducers with custom ones with combineReducer function with argument', () => {
-
       const actionDefinitions = {
         exampleReducer: {
           someAction: {
@@ -264,7 +258,7 @@ describe('reduxBreeze', () => {
           someOtherAction: {
             type: 'test',
           },
-        }
+        },
       };
       const customInitialState = {
         customField: 1,
@@ -278,7 +272,7 @@ describe('reduxBreeze', () => {
         exampleReducer2: {
           someOtherAction: null,
           field: 1,
-        }
+        },
       };
 
       const customReducer = (state = customInitialState, action) => {
@@ -306,7 +300,7 @@ describe('reduxBreeze', () => {
         exampleReducer2: {
           someOtherAction: 'SOMETHING',
           field: 2,
-        }
+        },
       });
     });
     it('should throw an error when provided with action that cannot be handled by applied plugins', () => {
@@ -320,7 +314,7 @@ describe('reduxBreeze', () => {
           unhandledAction: {
             type: 'unhandled',
           },
-        }
+        },
       };
 
       const reduxBreezeInstance = createReduxBreezeInstance(actionDefinitions, { useDefaultPlugin: false }, testPlugin);

@@ -1,6 +1,13 @@
 import _ from 'lodash';
 import { combineReducers } from 'redux';
-import { immutableSet, createActionType, chainReducers, mergePlugins, checkConflicts } from './tools';
+import {
+  immutableSet,
+  createActionType,
+  chainReducers,
+  mergePlugins,
+  checkConflicts,
+  immutablyCopyValue,
+} from './tools';
 import createDefaultPlugin from './defaultPlugin';
 
 const defaultConfig = {
@@ -24,6 +31,7 @@ export const tools = {
   chainReducers,
   mergePlugins,
   checkConflicts,
+  immutablyCopyValue,
 };
 
 const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig, ...plugins) => {

@@ -122,8 +122,9 @@ And it's just the beginning! :)
    - **initialValue** *any* value that is going to be used in initial state in *targetPath*
    - **defaultValue** *any* value that is going to be used when not provided in the action
    - **result**: *string|array<{sourcePath: string, targetPath: string, initialValue: any, defaultValue, any, result: string}>* type of the result; if 'list' then initialValue will be emtpy string by default; if 'entity' default initial value will be null;
-     - **sourcePath** *string* path from action the data is going to be taken from, can be nested e.g. 'payload.someField.someSubField'
-     - **targetPath** *string* path in reducer's state, the data is going to be saved in, can be nested e.g. 'someField.someSubField'
+     - **sourcePath** *string|function(action)* path from action the data is going to be taken from, can be nested e.g. 'payload.someField.someSubField', or function that returns that path
+     - **targetPath** *string|function(action)* path in reducer's state, the data is going to be saved in, can be nested e.g. 'someField.someSubField' or function that returns that path
      - **initialValue** *any* value that is going to be used in initial state in *targetPath*
      - **defaultValue** *any* value that is going to be used when not provided in the action
      - **result** *string* when initialValue not provided, it will be based on *result*; if 'list' the initialValue is going to be empty array; if 'entity' the initialValue is going to be null
+     - **value** *function(action, currentValue)|any* function that gets an action object and current state value (based on targetPath) and returns value to be saved, or hardcoded value to be set

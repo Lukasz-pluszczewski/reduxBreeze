@@ -103,10 +103,6 @@ All pull requests are appreciated as long as the code is well tested, documented
 You may grab a thing from todo (see below) or write plugins for your use-case.
 
 ## Todo
- * make readme great again:
-   * document config (not a big thing ;) )
-   * add basic usage tutorial
-   * add plugins tutorial
  * add tests to default plugin
  * write action definitions validation (by default only checking for 'type' field, but make it plugin enabled)
  * add more plugins:

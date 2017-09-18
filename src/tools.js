@@ -156,3 +156,15 @@ export const immutableSet = (object, path, value = null, delimiter = '.') => {
     [pathSplit[0]]: immutableSet(childObject, _.tail(pathSplit).join(delimiter), value, delimiter),
   };
 };
+
+/**
+ * Copy value from fromPath in fromObject and create new object from toObject with that value saved in toPath
+ * @param {object} fromObject object which you get the value from
+ * @param {string} fromPath path in fromObject where you get tha value from
+ * @param {object} toObject object where you save the value to
+ * @param {string} toPath path in toObject where you save the value
+ * @return {object} new object created from values in toObject
+ */
+export const immutablyCopyValue = (fromObject, fromPath, toObject, toPath) => {
+  return immutableSet(toObject, toPath, _.get(fromObject, fromPath));
+};
