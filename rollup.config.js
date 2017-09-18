@@ -16,6 +16,7 @@ export default {
   globals: {
     lodash: '_',
     debug: 'debug',
+    redux: 'redux',
   },
   output: [
     {
