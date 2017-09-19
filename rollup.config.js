@@ -22,7 +22,7 @@ export default {
     {
       file: pkg.main,
       format: 'umd',
-      name: 'reduxBreeze',
+      name: 'redux-breeze',
       sourcemap: true,
       exports: 'named',
     },
