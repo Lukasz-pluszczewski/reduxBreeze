@@ -165,6 +165,9 @@ export const immutableSet = (object, path, value = null, delimiter = '.') => {
  * @param {string} toPath path in toObject where you save the value
  * @return {object} new object created from values in toObject
  */
-export const immutablyCopyValue = (fromObject, fromPath, toObject, toPath) => {
-  return immutableSet(toObject, toPath, _.get(fromObject, fromPath));
-};
+export const immutablyCopyValue = (
+  fromObject,
+  fromPath,
+  toObject,
+  toPath
+) => immutableSet(toObject, toPath, _.get(fromObject, fromPath));
