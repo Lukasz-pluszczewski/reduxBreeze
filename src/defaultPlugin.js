@@ -1,9 +1,7 @@
 import _ from 'lodash';
 
-class hasNotBeenDefined {};
-
-const calculateValue = (sourcePath, targetPath, source, target, value = new hasNotBeenDefined()) => {
-  if (value instanceof hasNotBeenDefined) {
+const calculateValue = (sourcePath, targetPath, source, target, value) => {
+  if (value === undefined) {
     sourcePath = _.isFunction(sourcePath) ? sourcePath(source) : sourcePath;
     return _.get(source, sourcePath);
   }
@@ -14,12 +12,18 @@ const calculateValue = (sourcePath, targetPath, source, target, value = new hasN
   return value;
 };
 
-const createAssignment = (sourcePath, targetPath, source, target, value) => ({
-  targetPath: _.isFunction(targetPath) ? targetPath(source) : targetPath,
-  value: calculateValue(sourcePath, targetPath, source, target, value),
-});
+const createAssignment = (sourcePath, targetPath, source = {}, target = {}, value) => {
+  targetPath = _.isFunction(targetPath) ? targetPath(source) : targetPath;
+  if (!targetPath) {
+    return null;
+  }
+  return {
+    targetPath,
+    value: calculateValue(sourcePath, targetPath, source, target, value),
+  };
+};
 
-const assignmentCreator = (assignmentList, source, target) => {
+const assignmentCreator = (assignmentList, source = {}, target = {}) => {
   _.reduce(assignmentList, (accu, assignmentElement) => {
     const assignment = createAssignment(
       assignmentElement.sourcePath,
@@ -33,109 +37,33 @@ const assignmentCreator = (assignmentList, source, target) => {
   }, {});
 };
 
-
-// helper functions
-
-/**
- * Creates initial values assignments for actions
- * @param {object} actionDefinition definition of the action
- * @param {string} actionName name of the action
- * @return {object} assignments object
- */
-export const getInitialAssignments = (actionDefinition, actionName) => {
-  const initialAssignments = {};
-  const result = _.isFunction(actionDefinition.result)
-    ? actionDefinition.result({})
-    : actionDefinition.result;
-
-  // figuring out initial values from assignments (in result field)
+const getResultsAssignments = (actionDefinition, actionName, action, state, defaultSource = 'payload') => {
+  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
   if (Array.isArray(result)) {
-    result.forEach(definition => {
-      // we add assignments only if target path is explicit or can be calculated with empty action
-      if (_.isFunction(definition.targetPath) || definition.targetPath({})) {
-        const initialValue = _.has(definition, 'initialValue') ? definition.initialValue : null;
-        initialAssignments[definition.targetPath] = initialValue;
-      }
-    });
-  } else {
-    const initialValue = _.has(actionDefinition, 'initialValue') ? actionDefinition.initialValue : null;
-    initialAssignments[result || actionName] = initialValue;
+    return assignmentCreator(result, action, state);
   }
-
-  // setting additional initial values assignments
-  if (actionDefinition.initialValues) {
-    _.forEach(actionDefinition.initialValues, (value, path) => initialAssignments[path] = value);
-  }
-
-  return initialAssignments;
+  return assignmentCreator(
+    [{
+      sourcePath: actionDefinition.sourcePath || defaultSource,
+      targetPath: actionDefinition.targetPath || actionName,
+      value: actionDefinition.value,
+    }],
+    action,
+    state
+  );
 };
 
-/**
- * Function to get the value to be saved when action is dispatched (used in generated reducers)
- * @param {string} target path in the state to save the value to
- * @param {any|function(action: object, currentValue: any)} value value to be save or function to calculate it
- * @param {string} source path in the action object to get the value from
- * @param {object} action redux action object
- * @param {object} state current state
- * @return {any} value to be saved
- */
-export const getValue = (target, value, source, action, state) => {
-  if (_.isFunction(value)) {
-    return value(
-      action,
-      _.get(state, target)
-    );
-  } else if (value) {
-    return value;
-  }
-  return _.get(action, source);
-};
-
-/**
- * Function to get results assignments (used in generated reducers)
- * @param {object} actionDefinition definition of the action
- * @param {string} actionName name of the action
- * @param {object} action redux action object
- * @param {object} state current state
- * @return {object} assignments object
- */
-export const getResultsAssignments = (actionDefinition, actionName, action, state) => {
-  const resultAssignments = {};
-  const result = _.isFunction(actionDefinition.result)
-    ? actionDefinition.result(action)
-    : actionDefinition.result;
-
+const getInitialStateAssignments = (actionDefinition, actionName) => {
+  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result({}) : actionDefinition.result;
   if (Array.isArray(result)) {
-    result.forEach(resultDefinition => {
-      const targetPath = _.isFunction(resultDefinition.targetPath)
-        ? resultDefinition.targetPath(action)
-        : resultDefinition.targetPath;
-      const sourcePath = _.isFunction(resultDefinition.sourcePath)
-        ? resultDefinition.sourcePath(action)
-        : resultDefinition.sourcePath;
-
-      resultAssignments[targetPath] = getValue(
-        targetPath,
-        resultDefinition.value,
-        sourcePath,
-        action,
-        state
-      );
-    });
-  } else {
-    const sourcePath = _.isFunction(actionDefinition.sourcePath)
-      ? actionDefinition.sourcePath(action)
-      : actionDefinition.sourcePath;
-
-    resultAssignments[result || actionName] = getValue(
-      result || actionName,
-      actionDefinition.value,
-      sourcePath || 'result',
-      action,
-      state
-    );
+    return assignmentCreator(result);
   }
-  return resultAssignments;
+  return assignmentCreator(
+    [{
+      targetPath: actionDefinition.targetPath || actionName,
+      value: actionDefinition.initialValue || null,
+    }]
+  );
 };
 
 
