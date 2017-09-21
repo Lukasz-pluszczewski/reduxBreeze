@@ -7,9 +7,9 @@ const actionsDefinitions = {
   exampleReducer: {
     exampleAction: {
       type: 'default',
-      result: 'list', // just sets default value to empty array if you don't provide default it
       resultName: 'exampleList', // needed if result is a string, it's a name of the filed in a state where we will save the value
       defaultValue: [], // value to be set when you will not provide any
+      initialValue: [], // value to be set in initial state
     },
     someOtherAction: {
       type: 'default',
@@ -121,10 +121,9 @@ And it's just the beginning! :)
    - **type**: *string = 'default'* action type, must be 'default' to be handled by default plugin
    - **initialValue** *any* value that is going to be used in initial state in *targetPath*
    - **defaultValue** *any* value that is going to be used when not provided in the action
-   - **result**: *string|array<{sourcePath: string, targetPath: string, initialValue: any, defaultValue, any, result: string}>* type of the result; if 'list' then initialValue will be emtpy string by default; if 'entity' default initial value will be null;
+   - **result**: *string|array<{sourcePath: string, targetPath: string, initialValue: any, defaultValue, any, result: string}>* path where payload should be saved
      - **sourcePath** *string|function(action)* path from action the data is going to be taken from, can be nested e.g. 'payload.someField.someSubField', or function that returns that path
      - **targetPath** *string|function(action)* path in reducer's state, the data is going to be saved in, can be nested e.g. 'someField.someSubField' or function that returns that path
      - **initialValue** *any* value that is going to be used in initial state in *targetPath*
      - **defaultValue** *any* value that is going to be used when not provided in the action
-     - **result** *string* when initialValue not provided, it will be based on *result*; if 'list' the initialValue is going to be empty array; if 'entity' the initialValue is going to be null
      - **value** *function(action, currentValue)|any* function that gets an action object and current state value (based on targetPath) and returns value to be saved, or hardcoded value to be set
