@@ -8,7 +8,7 @@ import {
   checkConflicts,
   immutablyCopyValue,
 } from './tools';
-import createDefaultPlugin, { getResultsAssignments, getInitialAssignments, getValue } from './defaultPlugin';
+import createDefaultPlugin from './defaultPlugin';
 
 const defaultConfig = {
   useDefaultPlugin: true,
@@ -32,11 +32,6 @@ export const tools = {
   mergePlugins,
   checkConflicts,
   immutablyCopyValue,
-  defaultPlugin: {
-    getResultsAssignments,
-    getInitialAssignemnts: getInitialAssignments,
-    getValue,
-  },
 };
 
 export const defaultPlugin = createDefaultPlugin;

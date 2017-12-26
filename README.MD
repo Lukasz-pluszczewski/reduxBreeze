@@ -1,4 +1,4 @@
-# reduxBreeze
+# redux-breeze
 >Powerful redux wrapper to make handling redux actions and reducers a breeze!
 
 [![CircleCI](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze.svg?style=svg)](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze)
@@ -62,18 +62,18 @@ Only define something like:
 ```javascript
 changeFullName: {
   type: 'default',
-  result: [
-    { sourcePath: 'payload', targetPath: 'fullName' }
-  ],
+  result: {
+    fullName: 'payload',
+  },
 }
 ```
 And that's all! No action creators written. No reducer cases! You want default values? Or maybe custom initial value?
 ```javascript
 changeFullName: {
   type: 'default',
-  result: [
-    { sourcePath: 'payload', targetPath: 'fullName', defaultValue: 'John Doe', initialValue: 'No full name here yet' }
-  ],
+  result: {
+    fullName: { source: 'payload', default: 'John Doe', initial: 'No full name here yet' },
+  },
 }
 ```
 And then use it like this:

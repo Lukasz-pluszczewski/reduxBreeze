@@ -609,249 +609,80 @@ describe('reduxBreeze', () => {
   });
 
   describe('defaultPlugin', () => {
-    it('should create initialState assignments for default action', () => {
+    const actionDefinition = {
+      type: 'default',
+      result: {
+        value: 'payload',
+        valueAltered: (action, currentValue) => (currentValue || '') + action.payload,
+        valueStrange: { source: 'payload' },
+        valueDefault: { source: 'nonExistent', default: 'defaultValue' },
+        valueInitial: { source: 'payload', initial: 'initialValue' },
+      },
+    };
+
+    it('should create initialState for default action', () => {
       const defaultPlugin = createDefaultPlugin(tools, {});
       const initialStateAdapter = defaultPlugin.initialStateAdapter.default;
 
+      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
 
-
-      const initialStateAdapter = createBreezeBetterPromise(() => {})(tools).initialStateAdapter.promiseAction;
-      let state = tools.immutableSet(state, initialStateAdapter(promiseActionsDefinitions.simple, 'simple'));
-      state = tools.immutableSet(state, initialStateAdapter(promiseActionsDefinitions.withResult, 'withResult'));
-      state = tools.immutableSet(state, initialStateAdapter(promiseActionsDefinitions.withComplexResult, 'withComplexResult'));
-
-      expect(state).to.deep.equal({
-        pending: {
-          simple: false,
-          withResult: false,
-          withComplexResult: false,
-        },
-        started: {
-          simple: null,
-          withResult: null,
-          withComplexResult: null,
-        },
-        failed: {
-          simple: null,
-          withResult: null,
-          withComplexResult: null,
-        },
-        errors: {
-          simple: null,
-          withResult: null,
-          withComplexResult: null,
-        },
-        succeeded: {
-          simple: null,
-          withResult: null,
-          withComplexResult: null,
-        },
-        simple: [],
-        results: {
-          withResult: 'no value yet',
-          withComplexResult: {
-            field1: null,
-            fieldCalculated: null,
-            hardCodedValue: 'default value'
-          }
-        },
+      expect(initialState).to.be.deep.equal({
+        value: null,
+        valueAltered: null,
+        valueStrange: null,
+        valueDefault: null,
+        valueInitial: 'initialValue',
       });
     });
-    it('should create actionCreator for promise action', () => {
-      const makeCall = sinon.stub();
-      const promiseTools = {};
-      const actionAdapter = createBreezeBetterPromise(makeCall)(tools).actionAdapter.promiseAction;
-      const action = actionAdapter(promiseActionsDefinitions.simple, 'simple')('param');
-      action.promise(promiseTools);
 
-      expect(action.types).to.deep.equal({ start: 'SIMPLE', success: 'SIMPLE_SUCCESS', error: 'SIMPLE_ERROR' });
-      expect(action.payload).to.equal('param');
-      expect(makeCall.getCall(0).args[0]).to.deep.equal({
-        method: 'get',
-        url: 'v1/url',
+    it('should create reducer that returns initial state', () => {
+      const defaultPlugin = createDefaultPlugin(tools, {});
+      const initialStateAdapter = defaultPlugin.initialStateAdapter.default;
+      const reducerAdapter = defaultPlugin.reducerAdapter.default;
+
+      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
+
+      const reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, {});
+
+      expect(reducerResult).to.be.deep.equal({
+        value: null,
+        valueAltered: null,
+        valueStrange: null,
+        valueDefault: null,
+        valueInitial: 'initialValue',
       });
-      expect(makeCall.getCall(0).args[1]).to.equal('param');
-      expect(makeCall.getCall(0).args[2]).to.equal(promiseTools);
-    });
-    it('should create an action with custom promise function', () => {
-      const makeCall = sinon.stub();
-      const promiseTools = {};
-
-      const actionAdapter = createBreezeBetterPromise(makeCall)(tools).actionAdapter.promiseAction;
-      const action = actionAdapter(promiseActionsDefinitions.withCustomPromiseFunction, 'withCustomPromiseFunction')('param');
-      action.promise(promiseTools);
-      expect(customPromiseFunction).to.be.calledWith('param', promiseTools, makeCall);
     });
 
-    describe('generated reducer', () => {
-      it('should return initial state', () => {
-        const defaultPlugin = createDefaultPlugin(tools);
-        const reducerAdapter = defaultPlugin.reducerAdapter.default;
-        const generatedInitialState = breezeBetterPromise.initialStateAdapter.promiseAction(promiseActionsDefinitions.simple, 'simple');
-        const initialStateAssignments = reducerAdapter(promiseActionsDefinitions.simple, 'simple', generatedInitialState)(undefined, {});
-        const initialState = tools.immutableSet({}, initialStateAssignments);
+    it('should create action based on a definition', () => {
+      const defaultPlugin = createDefaultPlugin(tools, {});
+      const actionAdapter = defaultPlugin.actionAdapter.default;
 
-        expect(initialState).to.deep.equal({
-          pending: {
-            simple: false,
-          },
-          started: {
-            simple: null,
-          },
-          failed: {
-            simple: null,
-          },
-          errors: {
-            simple: null,
-          },
-          succeeded: {
-            simple: null,
-          },
-          simple: [],
-        });
+      const action = actionAdapter(actionDefinition, 'testAction');
+
+      expect(action('testPayload')).to.be.deep.equal({
+        type: 'TEST_ACTION',
+        payload: 'testPayload',
       });
-      it('should handle start, success, and error actions by setting proper values in a state', () => {
-        const breezeBetterPromise = createBreezeBetterPromise(() => {})(tools);
-        const reducerAdapter = breezeBetterPromise.reducerAdapter.promiseAction;
-        const generatedInitialStateAssignments = breezeBetterPromise.initialStateAdapter.promiseAction(promiseActionsDefinitions.simple, 'simple');
-        const generatedInitialState = tools.immutableSet({}, generatedInitialStateAssignments);
+    });
 
-        const reducer = reducerAdapter(promiseActionsDefinitions.simple, 'simple', generatedInitialState);
+    it('should create reducer that handles created action', () => {
+      const defaultPlugin = createDefaultPlugin(tools, {});
 
-        const actionStart = { type: 'SIMPLE', payload: 'params' };
-        const actionSuccess = { type: 'SIMPLE_SUCCESS', result: 'result', payload: 'params' };
-        const actionError = { type: 'SIMPLE_ERROR', error: 'error', payload: 'params' };
+      const actionAdapter = defaultPlugin.actionAdapter.default;
+      const initialStateAdapter = defaultPlugin.initialStateAdapter.default;
+      const reducerAdapter = defaultPlugin.reducerAdapter.default;
 
-        const afterStart = reducer(undefined, actionStart);
-        const afterSuccess = reducer(afterStart, actionSuccess);
-        const afterError = reducer(afterStart, actionError);
+      const action = actionAdapter(actionDefinition, 'testAction');
+      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
+      let reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, action('foo'));
+      reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(reducerResult, action('bar'));
 
-        expect(afterStart, 'Wrong state after start action').to.deep.equal({
-          pending: {
-            simple: true,
-          },
-          started: {
-            simple: 'params',
-          },
-          failed: {
-            simple: null,
-          },
-          errors: {
-            simple: null,
-          },
-          succeeded: {
-            simple: null,
-          },
-          simple: [],
-        });
-
-        expect(afterSuccess, 'Wrong state after success action').to.deep.equal({
-          pending: {
-            simple: false,
-          },
-          started: {
-            simple: 'params',
-          },
-          failed: {
-            simple: null,
-          },
-          errors: {
-            simple: null,
-          },
-          succeeded: {
-            simple: 'params',
-          },
-          simple: 'result',
-        });
-
-        expect(afterError, 'Wrong state after error action').to.deep.equal({
-          pending: {
-            simple: false,
-          },
-          started: {
-            simple: 'params',
-          },
-          failed: {
-            simple: 'params',
-          },
-          errors: {
-            simple: 'error',
-          },
-          succeeded: {
-            simple: null,
-          },
-          simple: [],
-        });
-      });
-      it('should set values in places pointed by provided paths', () => {
-        const breezeBetterPromise = createBreezeBetterPromise(() => {})(tools);
-        const reducerAdapter = breezeBetterPromise.reducerAdapter.promiseAction;
-        const generatedInitialStateAssignments = breezeBetterPromise.initialStateAdapter.promiseAction(promiseActionsDefinitions.withComplexResult, 'withComplexResult');
-        const generatedInitialState = tools.immutableSet({}, generatedInitialStateAssignments);
-
-        const reducer = reducerAdapter(promiseActionsDefinitions.withComplexResult, 'withComplexResult', generatedInitialState);
-
-        const actionStart = { type: 'WITH_COMPLEX_RESULT', payload: 'params' };
-        const actionSuccess = { type: 'WITH_COMPLEX_RESULT_SUCCESS', result: { field1: 'field1Value' }, payload: 'params' };
-
-        const afterSuccess = reducer(reducer(undefined, actionStart), actionSuccess);
-        expect(afterSuccess).to.deep.equal({
-          pending: {
-            withComplexResult: false,
-          },
-          started: {
-            withComplexResult: 'params',
-          },
-          failed: {
-            withComplexResult: null,
-          },
-          errors: {
-            withComplexResult: null,
-          },
-          succeeded: {
-            withComplexResult: 'params',
-          },
-          results: {
-            withComplexResult: {
-              field1: 'field1Value',
-              fieldCalculated: 'params',
-              hardCodedValue: 'myHardcodedValue',
-            },
-          },
-        });
-      });
-
-      it('should set custom calculated value', () => {
-        const breezeBetterPromise = createBreezeBetterPromise(() => {})(tools);
-        const reducerAdapter = breezeBetterPromise.reducerAdapter.promiseAction;
-        const generatedInitialStateAssignments = breezeBetterPromise.initialStateAdapter.promiseAction(promiseActionsDefinitions.withCustomValue, 'withCustomValue');
-        const generatedInitialState = tools.immutableSet({}, generatedInitialStateAssignments);
-
-        const reducer = reducerAdapter(promiseActionsDefinitions.withCustomValue, 'withCustomValue', generatedInitialState);
-
-        const actionStart = { type: 'WITH_CUSTOM_VALUE', payload: 'params' };
-        const actionSuccess = { type: 'WITH_CUSTOM_VALUE_SUCCESS', result: null, payload: 'params' };
-
-        const afterSuccess = reducer(reducer(undefined, actionStart), actionSuccess);
-
-        expect(afterSuccess).to.deep.equal({
-          pending: {
-            withCustomValue: false,
-          },
-          started: {
-            withCustomValue: 'params',
-          },
-          failed: {
-            withCustomValue: null,
-          },
-          errors: {
-            withCustomValue: null,
-          },
-          succeeded: {
-            withCustomValue: 'params',
-          },
-          withCustomValue: 'foobar',
-        });
+      expect(reducerResult).to.be.deep.equal({
+        value: 'bar',
+        valueAltered: 'foobar',
+        valueStrange: 'bar',
+        valueDefault: 'defaultValue',
+        valueInitial: 'bar',
       });
     });
   });

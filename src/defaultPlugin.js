@@ -1,73 +1,39 @@
 import _ from 'lodash';
 
-const calculateValue = (sourcePath, targetPath, source, target, value) => {
-  if (value === undefined) {
-    sourcePath = _.isFunction(sourcePath) ? sourcePath(source) : sourcePath;
-    return _.get(source, sourcePath);
-  }
-  if (_.isFunction(value)) {
-    targetPath = _.isFunction(targetPath) ? targetPath(source) : targetPath;
-    return value(source, _.get(target, targetPath));
-  }
-  return value;
-};
-
-const createAssignment = (sourcePath, targetPath, source = {}, target = {}, value) => {
-  targetPath = _.isFunction(targetPath) ? targetPath(source) : targetPath;
-  if (!targetPath) {
-    return null;
-  }
-  return {
-    targetPath,
-    value: calculateValue(sourcePath, targetPath, source, target, value),
-  };
-};
-
-const assignmentCreator = (assignmentList, source = {}, target = {}) => {
-  _.reduce(assignmentList, (accu, assignmentElement) => {
-    const assignment = createAssignment(
-      assignmentElement.sourcePath,
-      assignmentElement.targetPath,
-      source,
-      target,
-      assignmentElement.value
-    );
-    accu[assignment.targetPath] = assignment.value;
+const getResultsAssignments = (actionDefinition, actionName, action = {}, state = {}) => {
+  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
+  return _.reduce(result, (accu, source, target) => {
+    if (_.isFunction(source)) {
+      accu[target] = source(action, _.get(state, target));
+    } else if (_.isPlainObject(source)) {
+      if (_.has(source, 'default') && !_.has(action, source.source)) {
+        accu[target] = source.default;
+      } else {
+        accu[target] = _.get(action, source.source);
+      }
+    } else {
+      accu[target] = _.get(action, source);
+    }
     return accu;
   }, {});
 };
 
-const getResultsAssignments = (actionDefinition, actionName, action, state, defaultSource = 'payload') => {
-  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
-  if (Array.isArray(result)) {
-    return assignmentCreator(result, action, state);
-  }
-  return assignmentCreator(
-    [{
-      sourcePath: actionDefinition.sourcePath || defaultSource,
-      targetPath: actionDefinition.targetPath || actionName,
-      value: actionDefinition.value,
-    }],
-    action,
-    state
-  );
-};
-
-const getInitialStateAssignments = (actionDefinition, actionName) => {
+const getInitialStateAssignments = actionDefinition => {
   const result = _.isFunction(actionDefinition.result) ? actionDefinition.result({}) : actionDefinition.result;
-  if (Array.isArray(result)) {
-    return assignmentCreator(result);
-  }
-  return assignmentCreator(
-    [{
-      targetPath: actionDefinition.targetPath || actionName,
-      value: actionDefinition.initialValue || null,
-    }]
-  );
+  return _.reduce(result, (accu, source, target) => {
+    if (_.isPlainObject(source) && _.has(source, 'initial')) {
+      accu[target] = source.initial;
+    } else {
+      accu[target] = null;
+    }
+    return accu;
+  }, {});
 };
 
 
 const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
+  name: 'redux-breeze-plugin-default',
+
   /**
    * Object of functions that gets `actionDefinition` and `actionName` as arguments and return action creator
    */
@@ -99,7 +65,7 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
    */
   initialStateAdapter: {
     default(actionDefinition, actionName) {
-      return getInitialAssignments(actionDefinition, actionName);
+      return getInitialStateAssignments(actionDefinition, actionName);
     },
   },
 });
