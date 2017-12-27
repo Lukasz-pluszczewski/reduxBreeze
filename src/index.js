@@ -1,12 +1,11 @@
 import _ from 'lodash';
 import { combineReducers } from 'redux';
+import { set } from 'perfect-immutable';
 import {
-  immutableSet,
   createActionType,
   chainReducers,
   mergePlugins,
   checkConflicts,
-  immutablyCopyValue,
 } from './tools';
 import createDefaultPlugin from './defaultPlugin';
 
@@ -26,12 +25,10 @@ const defaultConfig = {
 };
 
 export const tools = {
-  immutableSet,
   createActionType,
   chainReducers,
   mergePlugins,
   checkConflicts,
-  immutablyCopyValue,
 };
 
 export const defaultPlugin = createDefaultPlugin;
@@ -65,7 +62,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
     actions,
     (actionsState, actionDefinition, actionName) => {
       if (plugin.initialStateAdapter[actionDefinition.type]) {
-        return immutableSet(
+        return set(
           actionsState,
           plugin.initialStateAdapter[actionDefinition.type](actionDefinition, actionName)
         );

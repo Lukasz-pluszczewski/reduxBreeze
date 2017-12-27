@@ -2,13 +2,14 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { set } from 'perfect-immutable';
 
 import createReduxBreezeInstance, { tools, defaultPlugin as createDefaultPlugin } from '../src/index';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const testPlugin = ({ createActionType, immutableSet }) => ({
+const testPlugin = ({ createActionType }) => ({
   name: 'test',
 
   /**
@@ -540,72 +541,6 @@ describe('reduxBreeze', () => {
         });
       });
     });
-    describe('immutableSet', () => {
-      it('should set a value without mutating object (but leaving untouched objects equal)', () => {
-        const obj1 = { field: 1, unmodifiedField: { field: 3 } };
-
-        const obj2 = tools.immutableSet(obj1, 'field', 2);
-
-        expect(obj2, 'Newly created object equals source object. It has probably been mutated').to.not.equal(obj1);
-        expect(obj2.unmodifiedField, 'Unmodified nested object has been unnecessarily replaced with new one')
-          .to.equal(obj1.unmodifiedField);
-        expect(obj2).to.deep.equal({
-          field: 2,
-          unmodifiedField: { field: 3 },
-        });
-      });
-      it('should set a deep nested value without mutating any of the nested objects', () => {
-        const obj1 = { field: { subField: 1 }, unmodifiedField: { field: 3 } };
-
-        const obj2 = tools.immutableSet(obj1, 'field.subField', 2);
-
-        expect(obj2, 'Newly created object equals source object. It has probably been mutated').to.not.equal(obj1);
-        expect(obj2.field, 'Intermediate object in path equals source. It has probably been mutated')
-          .to.not.equal(obj1.field);
-        expect(obj2.unmodifiedField, 'Unmodified nested object has been unnecessarily replaced with new one')
-          .to.equal(obj1.unmodifiedField);
-        expect(obj2).to.deep.equal({
-          field: { subField: 2 },
-          unmodifiedField: { field: 3 },
-        });
-      });
-      it('should set a collection of nested values', () => {
-        const obj1 = { field1: { subField: 1 }, field2: { subField: 10 }, unmodifiedField: { field: 3 } };
-
-        const obj2 = tools.immutableSet(obj1, {
-          'field1.subField': 2,
-          'field2.subField': 20,
-        });
-
-        expect(obj2, 'Newly created object equals source object. It has probably been mutated').to.not.equal(obj1);
-        expect(obj2.field1, 'Intermediate object in path equals source. It has probably been mutated')
-          .to.not.equal(obj1.field1);
-        expect(obj2.field2, 'Intermediate object in path equals source. It has probably been mutated')
-          .to.not.equal(obj1.field2);
-        expect(obj2.unmodifiedField, 'Unmodified nested object has been unnecessarily replaced with new one')
-          .to.equal(obj1.unmodifiedField);
-        expect(obj2).to.deep.equal({
-          field1: { subField: 2 },
-          field2: { subField: 20 },
-          unmodifiedField: { field: 3 },
-        });
-      });
-      it('should set value in nested path with custom path delimiter', () => {
-        const obj1 = { field: { subField: 1 }, unmodifiedField: { field: 3 } };
-
-        const obj2 = tools.immutableSet(obj1, 'field/subField', 2, '/');
-
-        expect(obj2, 'Newly created object equals source object. It has probably been mutated').to.not.equal(obj1);
-        expect(obj2.field, 'Intermediate object in path equals source. It has probably been mutated')
-          .to.not.equal(obj1.field);
-        expect(obj2.unmodifiedField, 'Unmodified nested object has been unnecessarily replaced with new one')
-          .to.equal(obj1.unmodifiedField);
-        expect(obj2).to.deep.equal({
-          field: { subField: 2 },
-          unmodifiedField: { field: 3 },
-        });
-      });
-    });
   });
 
   describe('defaultPlugin', () => {
@@ -614,6 +549,7 @@ describe('reduxBreeze', () => {
       result: {
         value: 'payload',
         valueAltered: (action, currentValue) => (currentValue || '') + action.payload,
+        valueStrangeAltered: { source: (action, currentValue) => [...currentValue, action.payload], initial: [] },
         valueStrange: { source: 'payload' },
         valueDefault: { source: 'nonExistent', default: 'defaultValue' },
         valueInitial: { source: 'payload', initial: 'initialValue' },
@@ -624,11 +560,12 @@ describe('reduxBreeze', () => {
       const defaultPlugin = createDefaultPlugin(tools, {});
       const initialStateAdapter = defaultPlugin.initialStateAdapter.default;
 
-      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
+      const initialState = set({}, initialStateAdapter(actionDefinition, 'testAction'));
 
       expect(initialState).to.be.deep.equal({
         value: null,
         valueAltered: null,
+        valueStrangeAltered: [],
         valueStrange: null,
         valueDefault: null,
         valueInitial: 'initialValue',
@@ -640,13 +577,14 @@ describe('reduxBreeze', () => {
       const initialStateAdapter = defaultPlugin.initialStateAdapter.default;
       const reducerAdapter = defaultPlugin.reducerAdapter.default;
 
-      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
+      const initialState = set({}, initialStateAdapter(actionDefinition, 'testAction'));
 
       const reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, {});
 
       expect(reducerResult).to.be.deep.equal({
         value: null,
         valueAltered: null,
+        valueStrangeAltered: [],
         valueStrange: null,
         valueDefault: null,
         valueInitial: 'initialValue',
@@ -673,13 +611,14 @@ describe('reduxBreeze', () => {
       const reducerAdapter = defaultPlugin.reducerAdapter.default;
 
       const action = actionAdapter(actionDefinition, 'testAction');
-      const initialState = tools.immutableSet({}, initialStateAdapter(actionDefinition, 'testAction'));
+      const initialState = set({}, initialStateAdapter(actionDefinition, 'testAction'));
       let reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, action('foo'));
       reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(reducerResult, action('bar'));
 
       expect(reducerResult).to.be.deep.equal({
         value: 'bar',
         valueAltered: 'foobar',
+        valueStrangeAltered: ['foo', 'bar'],
         valueStrange: 'bar',
         valueDefault: 'defaultValue',
         valueInitial: 'bar',

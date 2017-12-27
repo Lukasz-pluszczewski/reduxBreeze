@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { set } from 'perfect-immutable';
 
 const getResultsAssignments = (actionDefinition, actionName, action = {}, state = {}) => {
   const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
@@ -6,7 +7,9 @@ const getResultsAssignments = (actionDefinition, actionName, action = {}, state 
     if (_.isFunction(source)) {
       accu[target] = source(action, _.get(state, target));
     } else if (_.isPlainObject(source)) {
-      if (_.has(source, 'default') && !_.has(action, source.source)) {
+      if (_.isFunction(source.source)) {
+        accu[target] = source.source(action, _.get(state, target));
+      } else if (_.has(source, 'default') && !_.has(action, source.source)) {
         accu[target] = source.default;
       } else {
         accu[target] = _.get(action, source.source);
@@ -31,7 +34,7 @@ const getInitialStateAssignments = actionDefinition => {
 };
 
 
-const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
+const createDefaultPlugin = ({ createActionType }, config) => ({
   name: 'redux-breeze-plugin-default',
 
   /**
@@ -53,7 +56,7 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
     default(actionDefinition, actionName, initialState) {
       return (state = initialState, action) => {
         if (action.type === createActionType(actionName)) {
-          return immutableSet(state, getResultsAssignments(actionDefinition, actionName, action, state));
+          return set(state, getResultsAssignments(actionDefinition, actionName, action, state));
         }
         return state;
       };
