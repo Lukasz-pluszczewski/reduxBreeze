@@ -39,10 +39,10 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
     ...userConfig,
   };
 
-  // merging plugins deeply
+  // merging plugins
   const pluginsToMerge = config.useDefaultPlugin
     ? [createDefaultPlugin(tools), ...plugins.map(plugin => plugin(tools, config))]
-    : plugins.map(plugin => plugin(tools));
+    : plugins.map(plugin => plugin(tools, config));
 
   const plugin = mergePlugins(
     pluginsToMerge,
