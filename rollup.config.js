@@ -15,8 +15,8 @@ export default {
   exports: 'named',
   globals: {
     lodash: '_',
-    debug: 'debug',
     redux: 'redux',
+    'perfect-immutable': 'perfectImmutable',
   },
   output: [
     {

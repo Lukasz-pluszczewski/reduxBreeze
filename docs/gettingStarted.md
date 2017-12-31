@@ -6,7 +6,7 @@ Examples uses defaultPlugin (it's enabled by default and provides simple functio
 Because you will use reduxBreeze instance a lot, it's good to create separate file where you create and export it.
 ```javascript
 // myReduxBreezeInstance.js
-import createBreeze from 'reduxBreeze';
+import createBreeze from 'redux-breeze';
 
 const actionDefinitions = {};
 

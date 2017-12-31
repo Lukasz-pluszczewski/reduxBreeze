@@ -26,7 +26,6 @@ export const chainReducers = rawReducers => (state, action) => {
  * @return {string} error text or empty string if no conflicts found
  */
 export const checkConflicts = (plugins, adapterType, map = actionType => actionType) => {
-  // TODO add checking for plugins having the same name
   const foundAdapters = {};
   plugins.forEach(plugin => {
     if (plugin[adapterType]) {
@@ -76,7 +75,7 @@ export const mergePlugins = (plugins, { strict = true, mapActionTypes = actionTy
     if (strict) {
       throw new Error(errorMessage);
     }
-    console.warn(`${errorMessage} Duplicated adapters will be overwritten!`);
+    console.warn(`${errorMessage} Duplicated adapters will be overwritten!`); // eslint-disable-line no-console
   }
 
   return {
@@ -116,58 +115,3 @@ export const createActionType = (actionName, suffix = '', prefix = '') => {
   const upperSnakeCase = _.snakeCase(actionName).toUpperCase();
   return `${prefix ? `${prefix.toUpperCase()}_` : ''}${upperSnakeCase}${suffix ? `_${suffix.toUpperCase()}` : ''}`;
 };
-
-/**
- * Works like lodash _.set() but does not mutate object (doesn't work with array style keys like `someArray[2].anotherField`)
- * @param {object} object source object
- * @param {string|object} path in object to set value in or object with paths as keys and values as values (if path is an object it ignores 'value')
- * @param {any} value to set in given path
- * @param {string} delimiter path delimiter; by default: '.'
- * @return {object} new object with value(s) changed
- */
-export const immutableSet = (object, path, value = null, delimiter = '.') => {
-  // console.log('immutableSet', {object, path, value, delimiter});
-  if (!path) {
-    return value;
-  }
-  if (_.isPlainObject(path)) {
-    if (_.isEmpty(path)) {
-      return object;
-    }
-    return _.reduce(path, (accu, value, path) => immutableSet(accu, path, value, delimiter), object);
-  }
-
-  const pathSplit = path.split(delimiter);
-  if (pathSplit.length === 1) {
-    return {
-      ...object,
-      [path]: value,
-    };
-  }
-  let childObject = {};
-  if (_.has(object, pathSplit[0])) {
-    childObject = object[pathSplit[0]];
-    if (!_.isPlainObject(childObject)) {
-      throw new Error(`Part of 'path' provided is defined in 'object' and is not a plain JS object but ${typeof childObject}. It's most likely an error. Check the path and object provided to immutableSet function`);
-    }
-  }
-  return {
-    ...object,
-    [pathSplit[0]]: immutableSet(childObject, _.tail(pathSplit).join(delimiter), value, delimiter),
-  };
-};
-
-/**
- * Copy value from fromPath in fromObject and create new object from toObject with that value saved in toPath
- * @param {object} fromObject object which you get the value from
- * @param {string} fromPath path in fromObject where you get tha value from
- * @param {object} toObject object where you save the value to
- * @param {string} toPath path in toObject where you save the value
- * @return {object} new object created from values in toObject
- */
-export const immutablyCopyValue = (
-  fromObject,
-  fromPath,
-  toObject,
-  toPath
-) => immutableSet(toObject, toPath, _.get(fromObject, fromPath));

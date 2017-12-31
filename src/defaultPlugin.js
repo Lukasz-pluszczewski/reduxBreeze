@@ -1,8 +1,42 @@
 import _ from 'lodash';
+import { set } from 'perfect-immutable';
 
-class hasNotBeenDefined {}
+const getResultsAssignments = (actionDefinition, actionName, action = {}, state = {}) => {
+  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
+  return _.reduce(result, (accu, source, target) => {
+    if (_.isFunction(source)) {
+      accu[target] = source(action, _.get(state, target));
+    } else if (_.isPlainObject(source)) {
+      if (_.isFunction(source.source)) {
+        accu[target] = source.source(action, _.get(state, target));
+      } else if (_.has(source, 'default') && !_.has(action, source.source)) {
+        accu[target] = source.default;
+      } else {
+        accu[target] = _.get(action, source.source);
+      }
+    } else {
+      accu[target] = _.get(action, source);
+    }
+    return accu;
+  }, {});
+};
 
-const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
+const getInitialStateAssignments = actionDefinition => {
+  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result({}) : actionDefinition.result;
+  return _.reduce(result, (accu, source, target) => {
+    if (_.isPlainObject(source) && _.has(source, 'initial')) {
+      accu[target] = source.initial;
+    } else {
+      accu[target] = null;
+    }
+    return accu;
+  }, {});
+};
+
+
+const createDefaultPlugin = ({ createActionType }, config) => ({
+  name: 'redux-breeze-plugin-default',
+
   /**
    * Object of functions that gets `actionDefinition` and `actionName` as arguments and return action creator
    */
@@ -22,69 +56,7 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
     default(actionDefinition, actionName, initialState) {
       return (state = initialState, action) => {
         if (action.type === createActionType(actionName)) {
-          let resultsAssignments;
-
-          // result is array of assignments
-          if (Array.isArray(actionDefinition.result)) {
-            resultsAssignments = actionDefinition.result.reduce(
-              (
-                accu,
-                {
-                  sourcePath,
-                  targetPath,
-                  defaultValue = new hasNotBeenDefined(),
-                  value = new hasNotBeenDefined(),
-                }
-              ) => {
-                // setting default value if one has not been provided and defaultValue is defined
-                if (
-                  !(defaultValue instanceof hasNotBeenDefined)
-                  && _.isUndefined(_.get(action, sourcePath))
-                  && value instanceof hasNotBeenDefined
-                ) {
-                  accu[targetPath] = _.isFunction(defaultValue) ? defaultValue(action) : defaultValue;
-
-                // setting value based on sourcePath
-                } else if (value instanceof hasNotBeenDefined) {
-                  accu[targetPath] = _.get(action, _.isFunction(sourcePath) ? sourcePath(action) : sourcePath);
-
-                // setting value calculated by a 'value' function
-                } else if (_.isFunction(value)) {
-                  accu[targetPath] = value(action, _.get(state, targetPath));
-
-                // setting hardcoded value from 'value' field in the definition
-                } else {
-                  accu[targetPath] = value;
-                }
-                return accu;
-              },
-              {}
-            );
-
-          // result is a string ('list', 'entity') or is not provided
-          } else {
-            const resultName = actionDefinition.resultName || actionName;
-
-            // setting default value if one has not been provided and defaultValue is defined
-            if (
-              _.has(actionDefinition, 'defaultValue')
-              && _.isUndefined(action.payload)
-              && _.has()
-            ) {
-              resultsAssignments = { [resultName]: actionDefinition.defaultValue };
-            } else if (!_.has(actionDefinition, 'value')) {
-              resultsAssignments = { [resultName]: action.payload };
-
-            // setting value calculated by a 'value' function
-            } else if (_.isFunction(actionDefinition.value)) {
-              resultsAssignments = { [resultName]: actionDefinition.value(action, state[resultName]) };
-
-            // setting hardcoded value from 'value' field in the definition
-            } else {
-              resultsAssignments = { [resultName]: actionDefinition.value };
-            }
-          }
-          return immutableSet(state, resultsAssignments);
+          return set(state, getResultsAssignments(actionDefinition, actionName, action, state));
         }
         return state;
       };
@@ -96,32 +68,7 @@ const createDefaultPlugin = ({ createActionType, immutableSet }, config) => ({
    */
   initialStateAdapter: {
     default(actionDefinition, actionName) {
-      let resultsAssignements = null;
-      let defaultValue;
-      if (_.has(actionDefinition, 'initialValue')) {
-        defaultValue = actionDefinition.initialValue;
-      } else if (actionDefinition.result === 'list') {
-        defaultValue = [];
-      } else if (actionDefinition.result === 'entity') {
-        defaultValue = null;
-      }
-
-      if (Array.isArray(actionDefinition.result)) {
-        resultsAssignements = actionDefinition.result.reduce(
-          (accu, { targetPath, result, initialValue = new hasNotBeenDefined() }) => {
-            if (initialValue instanceof hasNotBeenDefined) {
-              accu[targetPath] = result === 'list' ? [] : null;
-            } else {
-              accu[targetPath] = initialValue;
-            }
-            return accu;
-          },
-          {}
-        );
-      } else {
-        resultsAssignements = { [actionDefinition.resultName]: defaultValue };
-      }
-      return resultsAssignements;
+      return getInitialStateAssignments(actionDefinition, actionName);
     },
   },
 });

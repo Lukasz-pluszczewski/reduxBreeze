@@ -1,6 +1,6 @@
 {
   "name": "redux-breeze",
-  "version": "0.0.1-rc.1",
+  "version": "1.0.0",
   "description": "",
   "repository": {
     "type": "git",
@@ -18,7 +18,7 @@
     "lint:fix": "esw rollup.config.js src --color --fix",
     "test": "npm run mochatest --silent",
     "test:watch": "npm run mochatest -- --watch",
-    "mochatest": "NODE_PATH=src mocha tools/testSetup.js \"./test/**/*.js\""
+    "mochatest": "NODE_PATH=src nyc --reporter=html mocha tools/testSetup.js \"./test/**/*.js\""
   },
   "keywords": [
     "redux",
@@ -47,16 +47,17 @@
     "eslint-config-brainhub": "1.6.3",
     "eslint-watch": "3.1.2",
     "mocha": "3.5.0",
+    "nyc": "11.4.1",
+    "redux": "^3.7.2",
     "rimraf": "2.6.1",
     "rollup": "0.49.2",
     "rollup-plugin-babel": "3.0.2",
     "sinon": "3.2.1",
-    "sinon-chai": "2.13.0",
-    "redux": "^3.7.2"
+    "sinon-chai": "2.13.0"
   },
   "dependencies": {
-    "debug": "3.0.1",
-    "lodash": "4.17.4"
+    "lodash": "4.17.4",
+    "perfect-immutable": "1.3.0"
   },
   "peerDependencies": {
     "redux": "^3.7.2"
