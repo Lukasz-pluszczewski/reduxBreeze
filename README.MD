@@ -95,6 +95,9 @@ connect(
 Interested?
 Dive into the documentation :)
 
+## Plugins
+- [redux-better-promise](https://github.com/Lukasz-pluszczewski/redux-breeze-plugin-better-promise)
+
 ## I wanna help!
 Great!
 
@@ -103,10 +106,8 @@ All pull requests are appreciated as long as the code is well tested, documented
 You may grab a thing from todo (see below) or write plugins for your use-case.
 
 ## Todo
- * add tests to default plugin
  * write action definitions validation (by default only checking for 'type' field, but make it plugin enabled)
  * add more plugins:
    * redux-saga
    * redux-thunk
-   * redux-better-promise
  * add selectors functionality (plugin-enabled)

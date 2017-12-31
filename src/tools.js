@@ -26,7 +26,6 @@ export const chainReducers = rawReducers => (state, action) => {
  * @return {string} error text or empty string if no conflicts found
  */
 export const checkConflicts = (plugins, adapterType, map = actionType => actionType) => {
-  // TODO add checking for plugins having the same name
   const foundAdapters = {};
   plugins.forEach(plugin => {
     if (plugin[adapterType]) {
@@ -76,7 +75,7 @@ export const mergePlugins = (plugins, { strict = true, mapActionTypes = actionTy
     if (strict) {
       throw new Error(errorMessage);
     }
-    console.warn(`${errorMessage} Duplicated adapters will be overwritten!`);
+    console.warn(`${errorMessage} Duplicated adapters will be overwritten!`); // eslint-disable-line no-console
   }
 
   return {
