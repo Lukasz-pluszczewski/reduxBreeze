@@ -4,10 +4,11 @@ import { set } from 'perfect-immutable';
 import {
   createActionType,
   chainReducers,
+  connect,
   mergePlugins,
   checkConflicts,
 } from './tools';
-import createDefaultPlugin from './defaultPlugin';
+import defaultPlugin from './defaultPlugin';
 
 const defaultConfig = {
   useDefaultPlugin: true,
@@ -24,14 +25,23 @@ const defaultConfig = {
   },
 };
 
+export {
+  createActionType,
+  chainReducers,
+  connect,
+  mergePlugins,
+  checkConflicts,
+  defaultPlugin,
+};
+
+// still exported for backwards compatibility and testing purposes
 export const tools = {
   createActionType,
   chainReducers,
+  connect,
   mergePlugins,
   checkConflicts,
 };
-
-export const defaultPlugin = createDefaultPlugin;
 
 const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig, ...plugins) => {
   const config = {
@@ -41,7 +51,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
 
   // merging plugins
   const pluginsToMerge = config.useDefaultPlugin
-    ? [createDefaultPlugin(tools), ...plugins.map(plugin => plugin(tools, config))]
+    ? [defaultPlugin(tools), ...plugins.map(plugin => plugin(tools, config))]
     : plugins.map(plugin => plugin(tools, config));
 
   const plugin = mergePlugins(

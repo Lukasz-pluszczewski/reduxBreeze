@@ -4,7 +4,14 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { set } from 'perfect-immutable';
 
-import createReduxBreezeInstance, { tools, defaultPlugin as createDefaultPlugin } from '../src/index';
+import createReduxBreezeInstance, {
+  tools,
+  checkConflicts,
+  defaultPlugin as createDefaultPlugin,
+  mergePlugins,
+} from '../src/index';
+
+import { getNewMapState } from '../src/tools';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -357,7 +364,7 @@ describe('reduxBreeze', () => {
   describe('tools', () => {
     describe('checkConflicts', () => {
       it('should return empty string when no conflicts were found', () => {
-        const testResult = tools.checkConflicts(
+        const testResult = checkConflicts(
           [
             { name: 'plugin1', actionAdapter: { test1() {} } },
             { name: 'plugin2', actionAdapter: { test2() {} } },
@@ -368,7 +375,7 @@ describe('reduxBreeze', () => {
         expect(testResult).to.be.equal('');
       });
       it('should return non empty string when conflicts were found', () => {
-        const testResult = tools.checkConflicts(
+        const testResult = checkConflicts(
           [
             { name: 'plugin1', actionAdapter: { test1() {} } },
             { name: 'plugin2', actionAdapter: { test1() {} } },
@@ -381,7 +388,7 @@ describe('reduxBreeze', () => {
       });
       it('should use provided mpaActionTypes function to map actionTypes', () => {
         const mapActionTypes = sinon.spy((actionType, pluginName, adapterName) => pluginName);
-        const testResult = tools.checkConflicts(
+        const testResult = checkConflicts(
           [
             { name: 'test1', actionAdapter: { test1() {} } },
             { name: 'test2', actionAdapter: { test1() {} } },
@@ -425,7 +432,7 @@ describe('reduxBreeze', () => {
             test3: sinon.spy(),
           },
         };
-        const mergedPlugins = tools.mergePlugins([plugin1, plugin2]);
+        const mergedPlugins = mergePlugins([plugin1, plugin2]);
 
         expect(mergedPlugins).to.nested.include({
           'actionAdapter.test1': plugin1.actionAdapter.test1,
@@ -464,7 +471,7 @@ describe('reduxBreeze', () => {
             test1: sinon.spy(),
           },
         };
-        expect(() => tools.mergePlugins([plugin1, plugin2])).to.throw(Error);
+        expect(() => mergePlugins([plugin1, plugin2])).to.throw(Error);
       });
       it('should not throw an error when there are conflicts but strict mode is turned off', () => {
         const plugin1 = {
@@ -491,7 +498,7 @@ describe('reduxBreeze', () => {
             test1: sinon.spy(),
           },
         };
-        expect(() => tools.mergePlugins([plugin1, plugin2], { strict: false })).to.not.throw(Error);
+        expect(() => mergePlugins([plugin1, plugin2], { strict: false })).to.not.throw(Error);
       });
       it('should map actionNames', () => {
         const plugin1 = {
@@ -521,7 +528,7 @@ describe('reduxBreeze', () => {
         const mapActionTypes = sinon.spy((actionType, pluginName, adapterType) => pluginName + actionType);
         let mergedPlugins = {};
 
-        expect(() => mergedPlugins = tools.mergePlugins([plugin1, plugin2], { mapActionTypes })).to.not.throw(Error);
+        expect(() => mergedPlugins = mergePlugins([plugin1, plugin2], { mapActionTypes })).to.not.throw(Error);
 
         expect(mapActionTypes).to.have.been.callCount(12);
         expect(mapActionTypes).to.have.been.calledWith('test1', 'plugin1', 'actionAdapter');
@@ -538,6 +545,50 @@ describe('reduxBreeze', () => {
           'reducerAdapter.plugin2test1': plugin2.reducerAdapter.test1,
           'initialStateAdapter.plugin1test1': plugin1.initialStateAdapter.test1,
           'initialStateAdapter.plugin2test1': plugin2.initialStateAdapter.test1,
+        });
+      });
+    });
+    describe('getNewMapState', () => {
+      it('should create map function out of plain object', () => {
+        const mapState = {
+          foo: 'state.foo.value',
+          bar: 'bar.value',
+          noValue: 'no.value.here',
+          baz: state => state.baz.value,
+        };
+
+        const state = {
+          foo: {
+            value: 'fooValue',
+          },
+          bar: {
+            value: 'barValue',
+          },
+          noValue: {},
+          baz: {
+            value: 'bazValue',
+          },
+        };
+
+        expect(getNewMapState(mapState)(state)).to.be.deep.equal({
+          foo: 'fooValue',
+          bar: 'barValue',
+          noValue: undefined,
+          baz: 'bazValue',
+        });
+      });
+
+      it('should return map function without altering it', () => {
+        const mapState = state => ({ foo: state.foo.value });
+
+        const state = {
+          foo: {
+            value: 'fooValue',
+          },
+        };
+
+        expect(getNewMapState(mapState)(state)).to.be.deep.equal({
+          foo: 'fooValue',
         });
       });
     });

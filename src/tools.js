@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { connect as reduxConnect } from 'react-redux';
 
 /**
  * Helper for redux to attach reducers to one field instead of composing them into separate fields
@@ -17,6 +18,34 @@ export const chainReducers = rawReducers => (state, action) => {
   });
   return reducers.reduce((accuState, reducer) => reducer(accuState, action), state);
 };
+
+/**
+ * Converts object of paths to traditional mapStateToProps function
+ * @param {object|function} mapState object of paths or traditional mapStateToProps function
+ * @return {function} mapStateToProps function
+ */
+export const getNewMapState = mapState => {
+  if (_.isPlainObject(mapState)) {
+    return state => _.mapValues(mapState, (value, key) => {
+      if (_.isString(value)) {
+        return _.get(state, value.replace(/^state\./, ''));
+      }
+      if (_.isFunction(value)) {
+        return value(state);
+      }
+      throw new Error(`When using plain object in "connect", values must be either strings (paths to values in state) or functions (selectors). Check value in ${key} field`);
+    });
+  }
+  return mapState;
+};
+
+/**
+ * Works like react-redux connect but allows you to use object of paths as first argument
+ * @param {object|function} mapState objects of paths or traditional mapStateToProps function
+ * @param {array} rest rest of connect arguments
+ * @return {function} connect HOC
+ */
+export const connect = (mapState, ...rest) => reduxConnect(getNewMapState(mapState), ...rest);
 
 /**
  * Checks if there are conflicts in plugins in given adapterType (conflict = two plugins handling same actionType)

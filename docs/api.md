@@ -56,16 +56,16 @@
    - **actionName**: *string* name of the action (must be the same as key of the action definition)
  - returns: **actionCreator**
 
-#### `tools.chainReducers(...reducer)`
- - `import { tools } from 'redux-breeze'`
+#### `chainReducers(...reducer)`
+ - `import { chainReducers } from 'redux-breeze'`
  - helper function to chain several reducers (and e.g. assign it to same field in redux state)
  - when called chained reducer, all chained reducers will be called in order, each getting state returned by previous one
  - arguments
    - **reducer**: *function* reducers to chain
  - return **chainedReducer**
 
-#### `tools.createActionType(actionName, suffix, prefix)`
- - `import { tools } from 'redux-breeze'`
+#### `createActionType(actionName, suffix, prefix)`
+ - `import { createActionType } from 'redux-breeze'`
  - helper function to create redux action type from actionName
  - arguments:
    - **actionName**: *string*
@@ -73,17 +73,7 @@
    - **prefix**: *string* (default: **''**) string that will be added at the beginning of the created action type
  - example:
  ```javascript
- tools.createActionType('myFancyName'); // MY_FANCY_NAME
- tools.createActionType('myFancyName', 'success'); // MY_FANCY_NAME_SUCCESS
- tools.createActionType('myFancyName', '', 'blah'); // BLAH_MY_FANCY_NAME
+ createActionType('myFancyName'); // MY_FANCY_NAME
+ createActionType('myFancyName', 'success'); // MY_FANCY_NAME_SUCCESS
+ createActionType('myFancyName', '', 'blah'); // BLAH_MY_FANCY_NAME
  ```
-
-#### `tools.immutableSet(object, path, value, delimiter)`
- - `import { tools } from 'redux-breeze'`
- - works like lodash's _.set() but does not mutate the object (can be used to easily, immutably set value in complicated nested structure)
- - arguments:
-   - **object**: *object* object to set value in
-   - **path**: *string|assignmentsObject}* path to the value you want to change, can be deep where field values are divided by *delimiter* (default: .) e.g. 'field.subField.somethingElse'. Can be an object e.g. { 'field.subField': 'newValue', 'anotherField.anotherSubField': 'anotherNewValue' } Lodash's array like syntax is not supported (e.g. 'field\[1\].subField')
-   - **value**: *any* value to be set in the path (if path is an object *value* is ignored)
-   - **delimiter**: *string* (defaut: **'.'**) delimiter used in the path
- - returns **newObject**

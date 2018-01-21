@@ -1,4 +1,4 @@
-# reduxBreeze
+# redux-breeze
 >Powerful redux wrapper to make handling redux actions and reducers a breeze!
 
 [![CircleCI](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze.svg?style=svg)](https://circleci.com/gh/Lukasz-pluszczewski/reduxBreeze)
@@ -26,11 +26,12 @@ There are at least 3 options:
 All contributions are appreciated!
 
 ## Documentation
- * [Getting started](gettingStarted.md)
- * [Glossary](glossary.md)
- * [Default plugin usage](defaultPlugin.md)
- * [API](api.md)
- * [Writing your own plugins](writingPlugin.md)
+ * [Getting started](docs/gettingStarted.md)
+ * [Glossary](docs/glossary.md)
+ * [Default plugin usage](docs/defaultPlugin.md)
+ * [API](docs/api.md)
+ * [Writing your own plugins](docs/writingPlugin.md)
+ * [Changelog](docs/changelog.md)
 
 ## Ok, so what do I get?
 Let's imagine you created forms. A lot of forms. And you wanted to keep values in redux state.
@@ -62,18 +63,18 @@ Only define something like:
 ```javascript
 changeFullName: {
   type: 'default',
-  result: [
-    { sourcePath: 'payload', targetPath: 'fullName' }
-  ],
+  result: {
+    fullName: 'payload',
+  },
 }
 ```
 And that's all! No action creators written. No reducer cases! You want default values? Or maybe custom initial value?
 ```javascript
 changeFullName: {
   type: 'default',
-  result: [
-    { sourcePath: 'payload', targetPath: 'fullName', defaultValue: 'John Doe', initialValue: 'No full name here yet' }
-  ],
+  result: {
+    fullName: { source: 'payload', default: 'John Doe', initial: 'No full name here yet' },
+  },
 }
 ```
 And then use it like this:
@@ -95,6 +96,9 @@ connect(
 Interested?
 Dive into the documentation :)
 
+## Plugins
+- [redux-better-promise](https://github.com/Lukasz-pluszczewski/redux-breeze-plugin-better-promise)
+
 ## I wanna help!
 Great!
 
@@ -103,14 +107,8 @@ All pull requests are appreciated as long as the code is well tested, documented
 You may grab a thing from todo (see below) or write plugins for your use-case.
 
 ## Todo
- * make readme great again:
-   * document config (not a big thing ;) )
-   * add basic usage tutorial
-   * add plugins tutorial
- * add tests to default plugin
  * write action definitions validation (by default only checking for 'type' field, but make it plugin enabled)
  * add more plugins:
    * redux-saga
    * redux-thunk
-   * redux-better-promise
  * add selectors functionality (plugin-enabled)

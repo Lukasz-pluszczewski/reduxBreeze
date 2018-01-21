@@ -31,6 +31,7 @@ All contributions are appreciated!
  * [Default plugin usage](docs/defaultPlugin.md)
  * [API](docs/api.md)
  * [Writing your own plugins](docs/writingPlugin.md)
+ * [Changelog](docs/changelog.md)
 
 ## Ok, so what do I get?
 Let's imagine you created forms. A lot of forms. And you wanted to keep values in redux state.

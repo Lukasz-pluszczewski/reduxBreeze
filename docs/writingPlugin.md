@@ -2,7 +2,7 @@
 
 #### `plugin(tools, config)`
  - parameters
-   - **tools**: *object* object of tools (consist of *chainReducer*, *createActionType*, *immutableSet*)
+   - **tools**: *object* object of tools (consist of *chainReducer*, *createActionType*)
    - **config**: *object* reduxBreeze config object
  - returns **pluginObject**
 
