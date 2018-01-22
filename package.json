@@ -1,6 +1,6 @@
 {
   "name": "redux-breeze",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "",
   "repository": {
     "type": "git",
@@ -48,6 +48,7 @@
     "eslint-watch": "3.1.2",
     "mocha": "3.5.0",
     "nyc": "11.4.1",
+    "react": "^16.2.0",
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "rimraf": "2.6.1",
@@ -62,6 +63,7 @@
   },
   "peerDependencies": {
     "react-redux": "^5.x.x",
+    "react": "^16.x.x",
     "redux": "^3.x.x"
   }
 }

@@ -77,3 +77,32 @@
  createActionType('myFancyName', 'success'); // MY_FANCY_NAME_SUCCESS
  createActionType('myFancyName', '', 'blah'); // BLAH_MY_FANCY_NAME
  ```
+
+#### `connect(mapStateToProps, mapDispatchToProps, mergeProps, options)`
+ - `import { connect } from 'redux-breeze'`
+ - wrapper for react-redux connect that transform mapStateToProps plain object to standard mapStateToProps function
+ - arguments:
+   - **mapStateToProps**: *function|object* standard function or object of paths in state or functions (see example below)
+   - ... all other arguments exactly the same as in [connect](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options)
+ - example:
+ ```javascript
+ // standard connect
+ connect(
+   state => ({
+     foo: state.foo.value,
+     bar: state.foo.value,
+     noValue: state.noValue && state.noValue.value,
+     baz: state.baz.value,
+   })
+ )(MyComponent);
+ 
+ // redux-breeze connect
+ connect(
+   {
+     foo: 'state.foo.value',
+     bar: 'bar.value', // you can omit 'state.' from the begining of path
+     noValue: 'noValue.value' // no error thrown, if noValue is undefined this will return undefined as well
+     baz: state => state.baz.value, // you can also use selectors by passing a function that accepts state as argument
+   }
+ )(MyComponent);
+ ```
