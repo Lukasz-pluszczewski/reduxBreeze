@@ -92,6 +92,7 @@
      foo: state.foo.value,
      bar: state.foo.value,
      noValue: state.noValue && state.noValue.value,
+     noValueWithDefault: state.noValue ? state.noValue.value : 'defaultValue',
      baz: state.baz.value,
    })
  )(MyComponent);
@@ -101,7 +102,9 @@
    {
      foo: 'state.foo.value',
      bar: 'bar.value', // you can omit 'state.' from the begining of path
-     noValue: 'noValue.value' // no error thrown, if noValue is undefined this will return undefined as well
+     noValue: 'noValue.value' // will throw error
+     noValueWithDefault: ['noValue.value', 'defaultValue'] // no error thrown, if noValue is undefined this will return defaultValue
+     noValueWithDefault: ['noValue.value'] // no error thrown, if noValue is undefined this will return undefined
      baz: state => state.baz.value, // you can also use selectors by passing a function that accepts state as argument
    }
  )(MyComponent);
