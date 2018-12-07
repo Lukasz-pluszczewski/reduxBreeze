@@ -1,7 +1,6 @@
-import { expect } from 'chai';
 import { set } from 'perfect-immutable';
 
-import { defaultPlugin as createDefaultPlugin, tools } from '../src/index';
+import { defaultPlugin as createDefaultPlugin, tools } from '../index';
 
 describe('defaultPlugin', () => {
   const actionDefinition = {
@@ -22,7 +21,7 @@ describe('defaultPlugin', () => {
 
     const initialState = set({}, initialStateAdapter(actionDefinition, 'testAction'));
 
-    expect(initialState).to.be.deep.equal({
+    expect(initialState).toEqual({
       value: null,
       valueAltered: null,
       valueStrangeAltered: [],
@@ -41,7 +40,7 @@ describe('defaultPlugin', () => {
 
     const reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, {});
 
-    expect(reducerResult).to.be.deep.equal({
+    expect(reducerResult).toEqual({
       value: null,
       valueAltered: null,
       valueStrangeAltered: [],
@@ -57,7 +56,7 @@ describe('defaultPlugin', () => {
 
     const action = actionAdapter(actionDefinition, 'testAction');
 
-    expect(action('testPayload')).to.be.deep.equal({
+    expect(action('testPayload')).toEqual({
       type: 'TEST_ACTION',
       payload: 'testPayload',
     });
@@ -75,7 +74,7 @@ describe('defaultPlugin', () => {
     let reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(undefined, action('foo'));
     reducerResult = reducerAdapter(actionDefinition, 'testAction', initialState)(reducerResult, action('bar'));
 
-    expect(reducerResult).to.be.deep.equal({
+    expect(reducerResult).toEqual({
       value: 'bar',
       valueAltered: 'foobar',
       valueStrangeAltered: ['foo', 'bar'],

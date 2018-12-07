@@ -1,5 +1,4 @@
-import { expect } from 'chai';
-import { getNewMapState } from '../../src/tools/connect';
+import { getNewMapState } from '../../tools/connect';
 
 describe('getNewMapState', () => {
   it('should create map function out of plain object', () => {
@@ -21,7 +20,7 @@ describe('getNewMapState', () => {
       },
     };
 
-    expect(getNewMapState(mapState)(state)).to.be.deep.equal({
+    expect(getNewMapState(mapState)(state)).toEqual({
       foo: 'fooValue',
       bar: 'barValue',
       baz: 'bazValue',
@@ -37,7 +36,7 @@ describe('getNewMapState', () => {
       noValue: {},
     };
 
-    expect(() => getNewMapState(mapState)(state)).to.throw(Error);
+    expect(() => getNewMapState(mapState)(state)).toThrowError(Error);
   });
 
   it('should not throw an error if path has not been found in state but default value has been provided', () => {
@@ -49,7 +48,7 @@ describe('getNewMapState', () => {
       noValue: {},
     };
 
-    expect(getNewMapState(mapState)(state)).to.be.deep.equal({
+    expect(getNewMapState(mapState)(state)).toEqual({
       noValue: 'default value',
     });
   });
@@ -63,7 +62,7 @@ describe('getNewMapState', () => {
       },
     };
 
-    expect(getNewMapState(mapState)(state)).to.be.deep.equal({
+    expect(getNewMapState(mapState)(state)).toEqual({
       foo: 'fooValue',
     });
   });
