@@ -1,10 +1,4 @@
-import chai, { expect } from 'chai';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
-
-import createReduxBreezeInstance, { tools } from '../src/index';
-
-chai.use(sinonChai);
+import createReduxBreezeInstance, { tools } from '../index';
 
 const testPlugin = ({ createActionType }) => ({
   name: 'test',
@@ -70,10 +64,10 @@ const defaultPluginDefinitions = {
 
 describe('reduxBreeze', () => {
   const nativeConsoleWarn = console.warn;
-  before(() => {
+  beforeAll(() => {
     console.warn = () => {};
   });
-  after(() => {
+  afterAll(() => {
     console.warn = nativeConsoleWarn;
   });
 
@@ -82,126 +76,132 @@ describe('reduxBreeze', () => {
       const plugin1Value = {
         name: 'plugin1',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       };
       const plugin2Value = {
         name: 'plugin2',
         actionAdapter: {
-          test2: sinon.spy(),
-          test3: sinon.spy(),
+          test2: jest.fn(),
+          test3: jest.fn(),
         },
         reducerAdapter: {
-          test2: sinon.spy(),
-          test3: sinon.spy(),
+          test2: jest.fn(),
+          test3: jest.fn(),
         },
         initialStateAdapter: {
-          test2: sinon.spy(),
-          test3: sinon.spy(),
+          test2: jest.fn(),
+          test3: jest.fn(),
         },
       };
-      const plugin1 = sinon.spy(() => plugin1Value);
-      const plugin2 = sinon.spy(() => plugin2Value);
+      const plugin1 = jest.fn(() => plugin1Value);
+      const plugin2 = jest.fn(() => plugin2Value);
 
       const reduxBreezeInstance = createReduxBreezeInstance({}, { useDefaultPlugin: false }, plugin1, plugin2);
 
-      expect(plugin1).to.have.been.calledWith(tools);
-      expect(plugin2).to.have.been.calledWith(tools);
-      expect(reduxBreezeInstance.getMergedPlugin()).to.nested.include({
-        'actionAdapter.test1': plugin1Value.actionAdapter.test1,
-        'actionAdapter.test2': plugin2Value.actionAdapter.test2,
-        'actionAdapter.test3': plugin2Value.actionAdapter.test3,
-        'reducerAdapter.test1': plugin1Value.reducerAdapter.test1,
-        'reducerAdapter.test2': plugin2Value.reducerAdapter.test2,
-        'reducerAdapter.test3': plugin2Value.reducerAdapter.test3,
-        'initialStateAdapter.test1': plugin1Value.initialStateAdapter.test1,
-        'initialStateAdapter.test2': plugin2Value.initialStateAdapter.test2,
-        'initialStateAdapter.test3': plugin2Value.initialStateAdapter.test3,
+      expect(plugin1.mock.calls[0][0]).toMatchObject(tools);
+      expect(plugin2.mock.calls[0][0]).toMatchObject(tools);
+      expect(reduxBreezeInstance.getMergedPlugin()).toMatchObject({
+        actionAdapter: {
+          test1: plugin1Value.actionAdapter.test1,
+          test2: plugin2Value.actionAdapter.test2,
+          test3: plugin2Value.actionAdapter.test3,
+        },
+        reducerAdapter: {
+          test1: plugin1Value.reducerAdapter.test1,
+          test2: plugin2Value.reducerAdapter.test2,
+          test3: plugin2Value.reducerAdapter.test3,
+        },
+        initialStateAdapter: {
+          test1: plugin1Value.initialStateAdapter.test1,
+          test2: plugin2Value.initialStateAdapter.test2,
+          test3: plugin2Value.initialStateAdapter.test3,
+        },
       });
     });
     it('should throw an error when plugins handle same types', () => {
       const plugin1 = () => ({
         name: 'plugin1',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       });
       const plugin2 = () => ({
         name: 'plugin2',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       });
-      expect(() => createReduxBreezeInstance({}, { useDefaultPlugin: false }, plugin1, plugin2)).to.throw(Error);
+      expect(() => createReduxBreezeInstance({}, { useDefaultPlugin: false }, plugin1, plugin2)).toThrowError(Error);
     });
     it('should not throw error when plugins handle same types and we set strict to false', () => {
       const plugin1 = () => ({
         name: 'plugin1',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       });
       const plugin2 = () => ({
         name: 'plugin2',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       });
-      expect(() => createReduxBreezeInstance({}, { strict: false, useDefaultPlugin: false }, plugin1, plugin2)).to.not.throw(Error);
+      expect(() => createReduxBreezeInstance({}, { strict: false, useDefaultPlugin: false }, plugin1, plugin2)).not.toThrow(Error);
     });
     it('should map adapter names', () => {
       const plugin1Value = {
         name: 'plugin1',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       };
       const plugin2Value = {
         name: 'plugin2',
         actionAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         reducerAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
         initialStateAdapter: {
-          test1: sinon.spy(),
+          test1: jest.fn(),
         },
       };
       const plugin1 = () => plugin1Value;
@@ -210,13 +210,19 @@ describe('reduxBreeze', () => {
       const mapActionTypes = (actionType, pluginName, adapterType) => pluginName === 'plugin2' ? `plugin2${actionType}` : actionType;
 
       const reduxBreezeInstance = createReduxBreezeInstance({}, { useDefaultPlugin: false, mapActionTypes }, plugin1, plugin2);
-      expect(reduxBreezeInstance.getMergedPlugin()).to.nested.include({
-        'actionAdapter.test1': plugin1Value.actionAdapter.test1,
-        'actionAdapter.plugin2test1': plugin2Value.actionAdapter.test1,
-        'reducerAdapter.test1': plugin1Value.reducerAdapter.test1,
-        'reducerAdapter.plugin2test1': plugin2Value.reducerAdapter.test1,
-        'initialStateAdapter.test1': plugin1Value.initialStateAdapter.test1,
-        'initialStateAdapter.plugin2test1': plugin2Value.initialStateAdapter.test1,
+      expect(reduxBreezeInstance.getMergedPlugin()).toMatchObject({
+        actionAdapter: {
+          test1: plugin1Value.actionAdapter.test1,
+          plugin2test1: plugin2Value.actionAdapter.test1,
+        },
+        reducerAdapter: {
+          test1: plugin1Value.reducerAdapter.test1,
+          plugin2test1: plugin2Value.reducerAdapter.test1,
+        },
+        initialStateAdapter: {
+          test1: plugin1Value.initialStateAdapter.test1,
+          plugin2test1: plugin2Value.initialStateAdapter.test1,
+        },
       });
     });
   });
@@ -248,8 +254,9 @@ describe('reduxBreeze', () => {
       const reduxBreezeInstance = createReduxBreezeInstance(actionDefinitions, { useDefaultPlugin: false }, testPlugin);
       const rootReducer = reduxBreezeInstance.combineReducers();
 
-      expect(rootReducer(undefined, {}), 'Did not generate initial state correctly').to.be.deep.equal(expectedInitialState);
-      expect(rootReducer(expectedInitialState, { type: 'SOMETHING' })).to.be.deep.equal({
+      // Did not generate initial state correctly
+      expect(rootReducer(undefined, {})).toEqual(expectedInitialState);
+      expect(rootReducer(expectedInitialState, { type: 'SOMETHING' })).toEqual({
         exampleReducer: {
           someAction: 'SOMETHING',
           field: 2,
@@ -303,8 +310,9 @@ describe('reduxBreeze', () => {
         exampleReducer: customReducer,
       });
 
-      expect(rootReducer(undefined, {}), 'Did not generate initial state correctly').to.be.deep.equal(expectedInitialState);
-      expect(rootReducer(expectedInitialState, { type: 'SOMETHING' })).to.be.deep.equal({
+      // Did not generate initial state correctly
+      expect(rootReducer(undefined, {})).toEqual(expectedInitialState);
+      expect(rootReducer(expectedInitialState, { type: 'SOMETHING' })).toEqual({
         exampleReducer: {
           someAction: 'SOMETHING',
           field: 2,
@@ -331,8 +339,8 @@ describe('reduxBreeze', () => {
       };
 
       const reduxBreezeInstance = createReduxBreezeInstance(actionDefinitions, { useDefaultPlugin: false }, testPlugin);
-      expect(() => reduxBreezeInstance.combineReducers()).to.throw(Error);
-      expect(() => reduxBreezeInstance.getAction('unhandledAction')).to.throw(Error);
+      expect(() => reduxBreezeInstance.combineReducers()).toThrowError(Error);
+      expect(() => reduxBreezeInstance.getAction('unhandledAction')).toThrowError(Error);
     });
     it('should generate action creator', () => {
       const actionDefinitions = {
@@ -344,7 +352,7 @@ describe('reduxBreeze', () => {
       };
 
       const reduxBreezeInstance = createReduxBreezeInstance(actionDefinitions, { useDefaultPlugin: false }, testPlugin);
-      expect(reduxBreezeInstance.getAction('someAction')('exampleParam')).to.be.deep.equal({
+      expect(reduxBreezeInstance.getAction('someAction')('exampleParam')).toEqual({
         params: 'exampleParam',
         somethingMore: 'someMoreValue',
       });
