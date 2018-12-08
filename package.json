@@ -1,6 +1,6 @@
 {
   "name": "redux-breeze",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "main": "build/index.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -90,7 +90,7 @@
   },
   "dependencies": {
     "lodash": "4.17.11",
-    "perfect-immutable": "2.0.0"
+    "perfect-immutable": "2.0.1"
   },
   "peerDependencies": {
     "react-redux": "^6.x.x",
