@@ -93,9 +93,9 @@
     "perfect-immutable": "2.0.0"
   },
   "peerDependencies": {
-    "react-redux": "^5.x.x",
+    "react-redux": "^6.x.x",
     "react": "^16.x.x",
-    "redux": "^3.x.x"
+    "redux": "^4.x.x"
   },
   "eslintConfig": {
     "extends": "react-app"
