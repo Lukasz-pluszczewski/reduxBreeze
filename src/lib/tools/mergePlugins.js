@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import reduce from 'lodash/reduce';
 import checkConflicts from './checkConflicts';
 
 /**
@@ -38,21 +38,21 @@ const mergePlugins = (plugins, { strict = true, mapActionTypes = actionType => a
   return {
     actionAdapter: plugins.reduce((actionAdapter, plugin) => ({
       ...actionAdapter,
-      ..._.reduce(plugin.actionAdapter, (accu, actionAdapter, actionType) => {
+      ...reduce(plugin.actionAdapter, (accu, actionAdapter, actionType) => {
         accu[mapActionTypes(actionType, plugin.name, 'actionAdapter')] = actionAdapter;
         return accu;
       }, {}),
     }), {}),
     reducerAdapter: plugins.reduce((actionAdapter, plugin) => ({
       ...actionAdapter,
-      ..._.reduce(plugin.reducerAdapter, (accu, reducerAdapter, actionType) => {
+      ...reduce(plugin.reducerAdapter, (accu, reducerAdapter, actionType) => {
         accu[mapActionTypes(actionType, plugin.name, 'reducerAdapter')] = reducerAdapter;
         return accu;
       }, {}),
     }), {}),
     initialStateAdapter: plugins.reduce((actionAdapter, plugin) => ({
       ...actionAdapter,
-      ..._.reduce(plugin.initialStateAdapter, (accu, initialStateAdapter, actionType) => {
+      ...reduce(plugin.initialStateAdapter, (accu, initialStateAdapter, actionType) => {
         accu[mapActionTypes(actionType, plugin.name, 'initialStateAdapter')] = initialStateAdapter;
         return accu;
       }, {}),

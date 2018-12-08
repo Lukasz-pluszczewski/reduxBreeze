@@ -1,4 +1,7 @@
-import _ from 'lodash';
+import reduce from 'lodash/reduce';
+import map from 'lodash/map';
+import find from 'lodash/find';
+import has from 'lodash/has';
 import { combineReducers } from 'redux';
 import { set } from 'perfect-immutable';
 import { defaultPlugin, tools, mergePlugins, chainReducers } from './index';
@@ -43,7 +46,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
    * @param {object} initialState optional custom initial state
    * @return {object} created initial state (merged with provided initialState)
    */
-  const createInitialState = (actions, initialState = {}) => _.reduce(
+  const createInitialState = (actions, initialState = {}) => reduce(
     actions,
     (actionsState, actionDefinition, actionName) => {
       if (plugin.initialStateAdapter[actionDefinition.type]) {
@@ -59,7 +62,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
 
   return {
     combineReducers(customReducers = {}) {
-      const reducers = _.reduce(actionDefinitions, (reducers, actions, reducerName) => {
+      const reducers = reduce(actionDefinitions, (reducers, actions, reducerName) => {
         // getting final initial state for this combined/chained reducer (triggering custom reducers to get their initial state)
         const initialState = createInitialState(
           actions,
@@ -67,7 +70,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
         );
 
         // creating array of reducers tha are going to be chained on the `reducerName` field
-        const reducersToChain = _.map(actions, (actionDefinition, actionName) => {
+        const reducersToChain = map(actions, (actionDefinition, actionName) => {
           if (plugin.reducerAdapter[actionDefinition.type]) {
             return plugin.reducerAdapter[actionDefinition.type](actionDefinition, actionName, initialState);
           }
@@ -85,7 +88,7 @@ const createReduxBreezeInstance = (actionDefinitions, userConfig = defaultConfig
       return combineReducers(reducers);
     },
     getAction(actionName, config) {
-      const actionGroup = _.find(actionDefinitions, actionsList => _.has(actionsList, actionName));
+      const actionGroup = find(actionDefinitions, actionsList => has(actionsList, actionName));
       if (!actionGroup) {
         throw new Error(`${actionName} action has not been found`);
       }

@@ -1,30 +1,34 @@
-import _ from 'lodash';
+import isPlainObject from 'lodash/isPlainObject';
+import isFunction from 'lodash/isFunction';
+import reduce from 'lodash/reduce';
+import get from 'lodash/get';
+import has from 'lodash/has';
 import { set } from 'perfect-immutable';
 
 const getResultsAssignments = (actionDefinition, actionName, action = {}, state = {}) => {
-  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
-  return _.reduce(result, (accu, source, target) => {
-    if (_.isFunction(source)) {
-      accu[target] = source(action, _.get(state, target));
-    } else if (_.isPlainObject(source)) {
-      if (_.isFunction(source.source)) {
-        accu[target] = source.source(action, _.get(state, target));
-      } else if (_.has(source, 'default') && !_.has(action, source.source)) {
+  const result = isFunction(actionDefinition.result) ? actionDefinition.result(action) : actionDefinition.result;
+  return reduce(result, (accu, source, target) => {
+    if (isFunction(source)) {
+      accu[target] = source(action, get(state, target));
+    } else if (isPlainObject(source)) {
+      if (isFunction(source.source)) {
+        accu[target] = source.source(action, get(state, target));
+      } else if (has(source, 'default') && !has(action, source.source)) {
         accu[target] = source.default;
       } else {
-        accu[target] = _.get(action, source.source);
+        accu[target] = get(action, source.source);
       }
     } else {
-      accu[target] = _.get(action, source);
+      accu[target] = get(action, source);
     }
     return accu;
   }, {});
 };
 
 const getInitialStateAssignments = actionDefinition => {
-  const result = _.isFunction(actionDefinition.result) ? actionDefinition.result({}) : actionDefinition.result;
-  return _.reduce(result, (accu, source, target) => {
-    if (_.isPlainObject(source) && _.has(source, 'initial')) {
+  const result = isFunction(actionDefinition.result) ? actionDefinition.result({}) : actionDefinition.result;
+  return reduce(result, (accu, source, target) => {
+    if (isPlainObject(source) && has(source, 'initial')) {
       accu[target] = source.initial;
     } else {
       accu[target] = null;

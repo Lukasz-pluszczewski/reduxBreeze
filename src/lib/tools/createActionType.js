@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import snakeCase from 'lodash/snakeCase';
 
 /**
  *
@@ -8,7 +8,7 @@ import _ from 'lodash';
  * @return {string} upperSnakeCase action type (e.g. SOME_ACTION or with example suffix SOME_ACTION_SUFFIX)
  */
 const createActionType = (actionName, suffix = '', prefix = '') => {
-  const upperSnakeCase = _.snakeCase(actionName).toUpperCase();
+  const upperSnakeCase = snakeCase(actionName).toUpperCase();
   return `${prefix ? `${prefix.toUpperCase()}_` : ''}${upperSnakeCase}${suffix ? `_${suffix.toUpperCase()}` : ''}`;
 };
 

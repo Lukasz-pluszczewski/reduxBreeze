@@ -1,4 +1,10 @@
-import _ from 'lodash';
+import isNil from 'lodash/isNil';
+import isArray from 'lodash/isArray';
+import isPlainObject from 'lodash/isPlainObject';
+import isString from 'lodash/isString';
+import isFunction from 'lodash/isFunction';
+import tail from 'lodash/tail';
+import mapValues from 'lodash/mapValues';
 import { connect as reduxConnect } from 'react-redux';
 
 // see `_stringToPath.js` file in lodash repository
@@ -34,7 +40,7 @@ const getValue = (target, field, throwError, defaultValue) => {
   if (throwError) {
     return target[field];
   }
-  return _.isNil(target) ? defaultValue : target[field];
+  return isNil(target) ? defaultValue : target[field];
 };
 
 /**
@@ -46,18 +52,18 @@ const getValue = (target, field, throwError, defaultValue) => {
  * @return {any} requested value
  */
 const get = (target, path, throwError, defaultValue) => {
-  if (!_.isArray(path) && !_.isPlainObject(path) && !_.isString(path)) {
+  if (!isArray(path) && !isPlainObject(path) && !isString(path)) {
     throw new Error(`Path passed to get function must be a string, array of strings and numbers or plain object but it's type is ${typeof path}`);
   }
 
   let pathSplit = path;
-  if (!_.isArray(path)) {
+  if (!isArray(path)) {
     pathSplit = stringToPath(path);
   }
   if (pathSplit.length === 1) {
     return getValue(target, pathSplit[0], throwError, defaultValue);
   }
-  return get(getValue(target, pathSplit[0]), _.tail(pathSplit), throwError, defaultValue);
+  return get(getValue(target, pathSplit[0]), tail(pathSplit), throwError, defaultValue);
 };
 
 /**
@@ -70,10 +76,10 @@ const get = (target, path, throwError, defaultValue) => {
  * @return {any} requested value
  */
 const getValueForMapStateToProps = (key, state, path, throwError, defaultValue) => {
-  if (_.isString(path)) {
+  if (isString(path)) {
     return get(state, path.replace(/^state\./, ''), throwError, defaultValue);
   }
-  if (_.isFunction(path)) {
+  if (isFunction(path)) {
     return path(state);
   }
   throw new Error(`When using plain object in "connect", values must be either strings (paths to values in state) or functions (selectors). Check value in ${key} field`);
@@ -85,8 +91,8 @@ const getValueForMapStateToProps = (key, state, path, throwError, defaultValue) 
  * @return {function} mapStateToProps function
  */
 export const getNewMapState = mapState => {
-  if (_.isPlainObject(mapState)) {
-    return state => _.mapValues(mapState, (value, key) => {
+  if (isPlainObject(mapState)) {
+    return state => mapValues(mapState, (value, key) => {
       if (Array.isArray(value)) {
         return getValueForMapStateToProps(key, state, value[0], false, value[1]);
       }

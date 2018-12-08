@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import filter from 'lodash/filter';
+import isNil from 'lodash/isNil';
+import isFunction from 'lodash/isFunction';
 
 /**
  * Helper for redux to attach reducers to one field instead of composing them into separate fields
@@ -6,11 +8,11 @@ import _ from 'lodash';
  * @return {function} reducer
  */
 const chainReducers = rawReducers => (state, action) => {
-  const reducers = _.filter(rawReducers, reducer => {
-    if (_.isNil(reducer)) {
+  const reducers = filter(rawReducers, reducer => {
+    if (isNil(reducer)) {
       return false;
     }
-    if (_.isFunction(reducer)) {
+    if (isFunction(reducer)) {
       return true;
     }
     throw new Error('reducers passed to chain reducers must be either a valida reducer (function) or nil (null or undefined)');
